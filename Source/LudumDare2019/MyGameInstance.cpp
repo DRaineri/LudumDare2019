@@ -35,6 +35,8 @@ void UMyGameInstance::ShowMainMenu()
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(MainMenu->TakeWidget());
 	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->bEnableClickEvents = true;
 
 	MainMenu->AddToViewport();
 }
@@ -53,6 +55,8 @@ void UMyGameInstance::ShowLoadingScreen()
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(LoadingScreen->TakeWidget());
 	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->bEnableClickEvents = true;
 }
 
 void UMyGameInstance::ShowServersList()
@@ -69,6 +73,8 @@ void UMyGameInstance::ShowServersList()
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(ServersList->TakeWidget());
 	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->bEnableClickEvents = true;
 }
 
 void UMyGameInstance::ShowErrorDialog(FString ErrorMessage)
@@ -88,6 +94,8 @@ void UMyGameInstance::ShowErrorDialog(FString ErrorMessage)
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(LoadingScreen->TakeWidget());
 	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->bEnableClickEvents = true;
 }
 
 bool UMyGameInstance::IsCurrentState(EGameState InGameState)
@@ -107,6 +115,15 @@ bool UMyGameInstance::TransitionToState(EGameState DesiredState)
 	{
 	case EGameState::MainMenu:
 		MainMenu->RemoveFromParent();
+		break;
+	case EGameState::ErrorDialog:
+		ErrorDialog->RemoveFromParent();
+		break;
+	case EGameState::LoadingScreen:
+		LoadingScreen->RemoveFromParent();
+		break;
+	case EGameState::ServersList:
+		ServersList->RemoveFromParent();
 		break;
 	}
 
