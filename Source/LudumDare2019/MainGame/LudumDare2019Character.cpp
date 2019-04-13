@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -112,6 +113,9 @@ void ALudumDare2019Character::SetupPlayerInputComponent(class UInputComponent* P
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
+
+	//InputComponent->BindAction("SwitchPawn", IE_Released, this, &ALudumDare2019Character::SwitchPawn);
+
 
 	// Bind jump events
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
@@ -297,4 +301,9 @@ bool ALudumDare2019Character::EnableTouchscreenMovement(class UInputComponent* P
 	}
 	
 	return false;
+}
+
+void ALudumDare2019Character::SwitchPawn()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switch time !!"));
 }
