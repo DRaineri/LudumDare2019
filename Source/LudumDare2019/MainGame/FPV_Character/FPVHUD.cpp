@@ -1,13 +1,13 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "LudumDare2019HUD.h"
+#include "FPVHUD.h"
 #include "Engine/Canvas.h"
 #include "Engine/Texture2D.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
 #include "UObject/ConstructorHelpers.h"
 
-ALudumDare2019HUD::ALudumDare2019HUD()
+AFPVHUD::AFPVHUD()
 {
 	// Set the crosshair texture
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/FirstPerson/Textures/FirstPersonCrosshair"));
@@ -15,7 +15,7 @@ ALudumDare2019HUD::ALudumDare2019HUD()
 }
 
 
-void ALudumDare2019HUD::DrawHUD()
+void AFPVHUD::DrawHUD()
 {
 	Super::DrawHUD();
 

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "LudumDare2019HUD.generated.h"
+#include "FPVHUD.generated.h"
 
 UCLASS()
-class ALudumDare2019HUD : public AHUD
+class AFPVHUD : public AHUD
 {
 	GENERATED_BODY()
 
 public:
-	ALudumDare2019HUD();
+	AFPVHUD();
 
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;

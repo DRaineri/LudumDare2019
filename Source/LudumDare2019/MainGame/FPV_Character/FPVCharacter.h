@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "LudumDare2019Character.generated.h"
+#include "FPVCharacter.generated.h"
 
 class UInputComponent;
 
 UCLASS(config=Game)
-class ALudumDare2019Character : public ACharacter
+class AFPVCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -46,7 +46,7 @@ class ALudumDare2019Character : public ACharacter
 	class UMotionControllerComponent* L_MotionController;
 
 public:
-	ALudumDare2019Character();
+	AFPVCharacter();
 
 protected:
 	virtual void BeginPlay();
@@ -66,7 +66,7 @@ public:
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class ALudumDare2019Projectile> ProjectileClass;
+	TSubclassOf<class AProjectile> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)

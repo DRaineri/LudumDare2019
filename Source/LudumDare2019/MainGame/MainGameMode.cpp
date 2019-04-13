@@ -1,20 +1,20 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "LudumDare2019GameMode.h"
-#include "FPV_Character/LudumDare2019HUD.h"
-#include "FPV_Character/LudumDare2019Character.h"
-#include "FPV_Character/Ludumndare2019Controller.h"
+#include "MainGameMode.h"
+#include "FPV_Character/FPVHUD.h"
+#include "FPV_Character/FPVCharacter.h"
+#include "MainGameController.h"
 #include "UObject/ConstructorHelpers.h"
 
-ALudumDare2019GameMode::ALudumDare2019GameMode()
+AMainGameMode::AMainGameMode()
 	: Super()
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/FirstPersonCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 	
-	PlayerControllerClass = ALudumnDare2019Controller::StaticClass();
+	PlayerControllerClass = AMainGameController::StaticClass();
 
 	// use our custom HUD class
-	HUDClass = ALudumDare2019HUD::StaticClass();
+	HUDClass = AFPVHUD::StaticClass();
 }

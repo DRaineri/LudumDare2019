@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "LudumDare2019GameMode.generated.h"
+#include "MainGameMode.generated.h"
 
 UCLASS(minimalapi)
-class ALudumDare2019GameMode : public AGameModeBase
+class AMainGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	ALudumDare2019GameMode();
+	AMainGameMode();
 };
 
 

@@ -1,7 +1,7 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "LudumDare2019Character.h"
-#include "LudumDare2019Projectile.h"
+#include "FPVCharacter.h"
+#include "Projectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -16,9 +16,9 @@
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
-// ALudumDare2019Character
+// AFPVCharacter
 
-ALudumDare2019Character::ALudumDare2019Character()
+AFPVCharacter::AFPVCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -85,7 +85,7 @@ ALudumDare2019Character::ALudumDare2019Character()
 	//bUsingMotionControllers = true;
 }
 
-void ALudumDare2019Character::BeginPlay()
+void AFPVCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -109,12 +109,12 @@ void ALudumDare2019Character::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ALudumDare2019Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
 
-	//InputComponent->BindAction("SwitchPawn", IE_Released, this, &ALudumDare2019Character::SwitchPawn);
+	//InputComponent->BindAction("SwitchPawn", IE_Released, this, &AFPVCharacter::SwitchPawn);
 
 
 	// Bind jump events
@@ -122,27 +122,27 @@ void ALudumDare2019Character::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ALudumDare2019Character::OnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPVCharacter::OnFire);
 
 	// Enable touchscreen input
 	EnableTouchscreenMovement(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ALudumDare2019Character::OnResetVR);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AFPVCharacter::OnResetVR);
 
 	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &ALudumDare2019Character::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ALudumDare2019Character::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AFPVCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AFPVCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ALudumDare2019Character::TurnAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AFPVCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &ALudumDare2019Character::LookUpAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AFPVCharacter::LookUpAtRate);
 }
 
-void ALudumDare2019Character::OnFire()
+void AFPVCharacter::OnFire()
 {
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
@@ -154,7 +154,7 @@ void ALudumDare2019Character::OnFire()
 			{
 				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
 				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ALudumDare2019Projectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+				World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
 			}
 			else
 			{
@@ -167,7 +167,7 @@ void ALudumDare2019Character::OnFire()
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 				// spawn the projectile at the muzzle
-				World->SpawnActor<ALudumDare2019Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			}
 		}
 	}
@@ -190,12 +190,12 @@ void ALudumDare2019Character::OnFire()
 	}
 }
 
-void ALudumDare2019Character::OnResetVR()
+void AFPVCharacter::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void ALudumDare2019Character::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
+void AFPVCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
 	if (TouchItem.bIsPressed == true)
 	{
@@ -211,7 +211,7 @@ void ALudumDare2019Character::BeginTouch(const ETouchIndex::Type FingerIndex, co
 	TouchItem.bMoved = false;
 }
 
-void ALudumDare2019Character::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
+void AFPVCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
 	if (TouchItem.bIsPressed == false)
 	{
@@ -223,7 +223,7 @@ void ALudumDare2019Character::EndTouch(const ETouchIndex::Type FingerIndex, cons
 //Commenting this section out to be consistent with FPS BP template.
 //This allows the user to turn without using the right virtual joystick
 
-//void ALudumDare2019Character::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
+//void AFPVCharacter::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
 //{
 //	if ((TouchItem.bIsPressed == true) && (TouchItem.FingerIndex == FingerIndex))
 //	{
@@ -258,7 +258,7 @@ void ALudumDare2019Character::EndTouch(const ETouchIndex::Type FingerIndex, cons
 //	}
 //}
 
-void ALudumDare2019Character::MoveForward(float Value)
+void AFPVCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
 	{
@@ -267,7 +267,7 @@ void ALudumDare2019Character::MoveForward(float Value)
 	}
 }
 
-void ALudumDare2019Character::MoveRight(float Value)
+void AFPVCharacter::MoveRight(float Value)
 {
 	if (Value != 0.0f)
 	{
@@ -276,34 +276,34 @@ void ALudumDare2019Character::MoveRight(float Value)
 	}
 }
 
-void ALudumDare2019Character::TurnAtRate(float Rate)
+void AFPVCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ALudumDare2019Character::LookUpAtRate(float Rate)
+void AFPVCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool ALudumDare2019Character::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)
+bool AFPVCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)
 {
 	if (FPlatformMisc::SupportsTouchInput() || GetDefault<UInputSettings>()->bUseMouseForTouch)
 	{
-		PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ALudumDare2019Character::BeginTouch);
-		PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ALudumDare2019Character::EndTouch);
+		PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AFPVCharacter::BeginTouch);
+		PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &AFPVCharacter::EndTouch);
 
 		//Commenting this out to be more consistent with FPS BP template.
-		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ALudumDare2019Character::TouchUpdate);
+		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AFPVCharacter::TouchUpdate);
 		return true;
 	}
 	
 	return false;
 }
 
-void ALudumDare2019Character::SwitchPawn()
+void AFPVCharacter::SwitchPawn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switch time !!"));
 }

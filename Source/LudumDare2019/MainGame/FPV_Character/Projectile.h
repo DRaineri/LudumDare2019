@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LudumDare2019Projectile.generated.h"
+#include "Projectile.generated.h"
 
 UCLASS(config=Game)
-class ALudumDare2019Projectile : public AActor
+class AProjectile : public AActor
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ class ALudumDare2019Projectile : public AActor
 	class UProjectileMovementComponent* ProjectileMovement;
 
 public:
-	ALudumDare2019Projectile();
+	AProjectile();
 
 	/** called when projectile hits something */
 	UFUNCTION()

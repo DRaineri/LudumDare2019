@@ -2,10 +2,10 @@
 
 #include "Engine/Classes/GameFramework/PlayerController.h"
 
-#include "Ludumndare2019Controller.generated.h"
+#include "MainGameController.generated.h"
 
 UCLASS()
-class ALudumnDare2019Controller : public APlayerController
+class AMainGameController : public APlayerController
 {
 	GENERATED_BODY()
 
