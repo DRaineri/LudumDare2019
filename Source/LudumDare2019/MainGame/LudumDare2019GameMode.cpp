@@ -1,9 +1,9 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "LudumDare2019GameMode.h"
-#include "LudumDare2019HUD.h"
-#include "LudumDare2019Character.h"
-#include "Ludumndare2019Controller.h"
+#include "FPV_Character/LudumDare2019HUD.h"
+#include "FPV_Character/LudumDare2019Character.h"
+#include "FPV_Character/Ludumndare2019Controller.h"
 #include "UObject/ConstructorHelpers.h"
 
 ALudumDare2019GameMode::ALudumDare2019GameMode()
