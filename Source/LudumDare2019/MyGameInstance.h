@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
-#include "ErrorDialogUserWidget.h"
+#include "Menus/ErrorDialogUserWidget.h"
 #include "MyGameInstance.generated.h"
 
 UENUM(BlueprintType)
