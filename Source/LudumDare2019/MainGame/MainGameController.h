@@ -14,6 +14,7 @@ class AMainGameController : public APlayerController
 protected:
 	virtual void SetupInputComponent() override;
 
+	UFUNCTION(Server, reliable, withValidation)
 	void SwitchPawn();
 
 	TSubclassOf<APawn> _firstPersonPawnClass;
