@@ -16,7 +16,12 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
+	void MoveForward(float val);
+	void MoveRight(float val);
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;

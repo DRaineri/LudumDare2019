@@ -43,6 +43,29 @@ ATDVCharacter::ATDVCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	// Bind movement events
+	PlayerInputComponent->BindAxis("MoveForward", this, &ATDVCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ATDVCharacter::MoveRight);
+}
+
+void ATDVCharacter::MoveForward(float val)
+{
+	if (val != 0.0f)
+	{
+		// add movement in that direction
+		FVector xAxis(1, 0, 0);
+		AddMovementInput(xAxis, val);
+	}
+}
+
+void ATDVCharacter::MoveRight(float val)
+{
+	FVector yAxis(0, 1, 0);
+	AddMovementInput(yAxis, val);
+}
+
 void ATDVCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
