@@ -30,22 +30,26 @@ void AMainGameController::SwitchPawn()
 
 	if (IsValid(world) && IsValid(previousPawn))
 	{
-		FTransform pawnTransform = previousPawn->GetTransform();
+		FTransform pawnTransform = previousPawn->GetActorTransform();
 
 		APawn* newPawn = nullptr;
+		FActorSpawnParameters parameters;
+		parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		if (previousPawn->IsA(_topDownPawnClass))
 		{
-			newPawn = world->SpawnActor<APawn>(_firstPersonPawnClass, pawnTransform);
+			newPawn = world->SpawnActor<APawn>(_firstPersonPawnClass, pawnTransform, parameters);
 		}
 		else if(previousPawn->IsA(_firstPersonPawnClass))
 		{
-			newPawn = world->SpawnActor<APawn>(_topDownPawnClass, pawnTransform);
+			newPawn = world->SpawnActor<APawn>(_topDownPawnClass, pawnTransform, parameters);
 		}
 		else 
 		{
 			ensureMsgf(false, TEXT("Controller doesn't have a right pawn possessed (top down or first person)"));
 			return;
 		}
+
+		ensureMsgf(IsValid(newPawn), TEXT("Invalid new pawn created"));
 
 		previousPawn->Destroy();
 		Possess(newPawn);
