@@ -113,10 +113,7 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
-
-	//InputComponent->BindAction("SwitchPawn", IE_Released, this, &AFPVCharacter::SwitchPawn);
-
-
+	   
 	// Bind jump events
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -301,9 +298,4 @@ bool AFPVCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInput
 	}
 	
 	return false;
-}
-
-void AFPVCharacter::SwitchPawn()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switch time !!"));
 }

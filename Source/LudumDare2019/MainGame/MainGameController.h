@@ -9,8 +9,13 @@ class AMainGameController : public APlayerController
 {
 	GENERATED_BODY()
 
+	AMainGameController();
+
 protected:
 	virtual void SetupInputComponent() override;
 
 	void SwitchPawn();
+
+	TSubclassOf<APawn> _firstPersonPawnClass;
+	TSubclassOf<APawn> _topDownPawnClass;
 };
