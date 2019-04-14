@@ -11,6 +11,7 @@ AMainGameMode::AMainGameMode()
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/FirstPersonCharacter"));
+	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/TopDown/Blueprints/TopDownCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 	
 	PlayerControllerClass = AMainGameController::StaticClass();
