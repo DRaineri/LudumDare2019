@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "MyGameInstance.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
 ATDVCharacter::ATDVCharacter()
@@ -48,6 +50,8 @@ void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATDVCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATDVCharacter::MoveRight);
+
+	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &ATDVCharacter::InviteFriend);
 }
 
 void ATDVCharacter::MoveForward(float val)
@@ -64,6 +68,13 @@ void ATDVCharacter::MoveRight(float val)
 {
 	FVector yAxis(0, 1, 0);
 	AddMovementInput(yAxis, val);
+}
+
+void ATDVCharacter::InviteFriend()
+{
+	// Get the current game instance
+	UMyGameInstance* Gi = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	Gi->InviteFriend();
 }
 
 void ATDVCharacter::Tick(float DeltaSeconds)

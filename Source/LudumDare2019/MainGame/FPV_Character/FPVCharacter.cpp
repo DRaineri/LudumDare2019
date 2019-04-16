@@ -12,6 +12,8 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "MyGameInstance.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -137,6 +139,9 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	PlayerInputComponent->BindAxis("TurnRate", this, &AFPVCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AFPVCharacter::LookUpAtRate);
+
+
+	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &AFPVCharacter::InviteFriend);
 }
 
 void AFPVCharacter::OnFire()
@@ -298,4 +303,11 @@ bool AFPVCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInput
 	}
 	
 	return false;
+}
+
+void AFPVCharacter::InviteFriend()
+{
+	// Get the current game instance
+	UMyGameInstance* Gi = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	Gi->InviteFriend();
 }

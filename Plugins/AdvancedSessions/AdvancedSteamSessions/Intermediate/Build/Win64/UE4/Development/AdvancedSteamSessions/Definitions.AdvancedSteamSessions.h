@@ -39,14 +39,14 @@
 #define PLATFORM_WINDOWS 1
 #define DEPTH_32_BIT_CONVERSION 0
 #define PROJECT_COPYRIGHT_STRING Fill out your copyright notice in the Description page of Project Settings.
-#define PROJECT_PRODUCT_NAME Virtual Reality BP Game Template
-#define PROJECT_PRODUCT_IDENTIFIER VRExpPluginExample
+#define PROJECT_PRODUCT_NAME UE4Game
+#define PROJECT_PRODUCT_IDENTIFIER LudumDare2019
 #define NDEBUG 1
 #define UE_BUILD_DEVELOPMENT 1
-#define UE_ENGINE_DIRECTORY "../../../../../../../Program Files/Epic Games/UE_4.21/Engine/"
-#define ORIGINAL_FILE_NAME "VRExpPluginExample.exe"
+#define UE_ENGINE_DIRECTORY "D:/Epic Games/UE_4.21/Engine/"
+#define ORIGINAL_FILE_NAME "LudumDare2019.exe"
 #define UE_IS_ENGINE_MODULE 0
-#define UE_PROJECT_NAME VRExpPluginExample
+#define UE_PROJECT_NAME LudumDare2019
 #define WITH_ADVANCED_STEAM_SESSIONS 1
 #define IMPLEMENT_ENCRYPTION_KEY_REGISTRATION() 
 #define IMPLEMENT_SIGNING_KEY_REGISTRATION() 

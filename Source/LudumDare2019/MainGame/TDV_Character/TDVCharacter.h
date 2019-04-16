@@ -22,6 +22,12 @@ protected:
 	void MoveForward(float val);
 	void MoveRight(float val);
 
+	/**
+	 * Called via input (I) to show the invite friend
+	 * UI on the client
+	**/
+	void InviteFriend();
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;

@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Menus/ErrorDialogUserWidget.h"
+#include "AdvancedFriendsGameInstance.h"
 #include "MyGameInstance.generated.h"
 
 UENUM(BlueprintType)
@@ -23,7 +24,7 @@ enum class EGameState : uint8
  *
  */
 UCLASS()
-class LUDUMDARE2019_API UMyGameInstance : public UGameInstance
+class LUDUMDARE2019_API UMyGameInstance : public UAdvancedFriendsGameInstance
 {
 	GENERATED_BODY()
 
@@ -50,6 +51,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void DestroySession();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void InviteFriend();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<class UUserWidget> wMainMenu;

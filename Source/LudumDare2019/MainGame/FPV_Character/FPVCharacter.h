@@ -106,6 +106,12 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	/**
+	 * Called via input (I) to show the invite friend
+	 * UI on the client
+	**/
+	void InviteFriend();
+
 	struct TouchData
 	{
 		TouchData() { bIsPressed = false;Location=FVector::ZeroVector;}
