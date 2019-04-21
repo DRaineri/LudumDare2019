@@ -18,10 +18,10 @@ AMainGameController::AMainGameController()
 void AMainGameController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	InputComponent->BindAction("SwitchPawn", IE_Released, this, &AMainGameController::SwitchPawn);
+	InputComponent->BindAction("SwitchPawn", IE_Released, this, &AMainGameController::Server_SwitchPawn);
 }
 
-void AMainGameController::SwitchPawn_Implementation()
+void AMainGameController::Server_SwitchPawn_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switch time !!"));
 	
@@ -56,7 +56,7 @@ void AMainGameController::SwitchPawn_Implementation()
 	}	
 }
 
-bool AMainGameController::SwitchPawn_Validate()
+bool AMainGameController::Server_SwitchPawn_Validate()
 {
 	return true;
 }

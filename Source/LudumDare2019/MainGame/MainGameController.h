@@ -15,7 +15,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	UFUNCTION(Server, reliable, withValidation)
-	void SwitchPawn();
+	void Server_SwitchPawn();
 
 	TSubclassOf<APawn> _firstPersonPawnClass;
 	TSubclassOf<APawn> _topDownPawnClass;

@@ -68,6 +68,9 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	// Bind fire event
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPVCharacter::OnFire);
+
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPVCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPVCharacter::MoveRight);
@@ -119,4 +122,26 @@ void AFPVCharacter::InviteFriend()
 	// Get the current game instance
 	UMyGameInstance* Gi = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	Gi->InviteFriend();
+}
+
+void AFPVCharacter::OnFire_Implementation()
+{
+	//Server_Fire();
+}
+
+void AFPVCharacter::Server_Fire_Implementation()
+{
+	UWorld* world = GetWorld();
+	if (IsValid(world) && _projectileClass.IsValid())
+	{
+		FActorSpawnParameters param;
+		param.Owner = this;
+		Instigator = this;
+		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass.Get(), GetActorTransform(), param);
+	}
+}
+
+bool AFPVCharacter::Server_Fire_Validate()
+{
+	return true;
 }

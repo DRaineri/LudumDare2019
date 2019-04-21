@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "LudumDare2019/MainGame/FPV_Character/Projectile.h"
+
 #include "FPVCharacter.generated.h"
 
 class UInputComponent;
@@ -57,11 +59,20 @@ protected:
 	 * UI on the client
 	 */
 	void InviteFriend();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnFire();
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void Server_Fire();
 	
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
+
+	UPROPERTY(EditDefaultsOnly)
+	TAssetSubclassOf<AProjectile> _projectileClass;
 
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
