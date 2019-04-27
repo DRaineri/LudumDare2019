@@ -49,9 +49,23 @@ void ATDVCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!TopDownWidget)
-		TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
-	TopDownWidget->AddToViewport();
+	if (IsLocallyControlled())
+	{
+		if (!TopDownWidget)
+			TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
+		TopDownWidget->AddToViewport();
+	}
+}
+
+void ATDVCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	if (IsLocallyControlled())
+	{
+		if (TopDownWidget)
+			TopDownWidget->RemoveFromParent();
+	}
 }
 
 void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

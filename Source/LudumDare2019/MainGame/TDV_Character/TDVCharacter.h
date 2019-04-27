@@ -17,6 +17,7 @@ public:
 	ATDVCharacter();
 
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
