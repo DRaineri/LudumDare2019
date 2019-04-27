@@ -74,6 +74,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<AProjectile> _projectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> wFirstPersonWidget;
+	class UUserWidget* FirstPersonWidget;
+
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFPSCameraComponent() const { return FPSCameraComponent; }

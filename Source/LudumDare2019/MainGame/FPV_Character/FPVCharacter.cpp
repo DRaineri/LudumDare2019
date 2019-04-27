@@ -52,6 +52,10 @@ void AFPVCharacter::BeginPlay()
 
 	GetMesh()->SetHiddenInGame(false, true);
 	FPSCameraComponent->SetHiddenInGame(true, true);
+
+	if (!FirstPersonWidget)
+		FirstPersonWidget = CreateWidget<UUserWidget>(GetWorld(), wFirstPersonWidget);
+	FirstPersonWidget->AddToViewport();
 }
 
 //////////////////////////////////////////////////////////////////////////

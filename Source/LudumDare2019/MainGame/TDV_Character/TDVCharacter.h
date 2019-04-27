@@ -16,7 +16,7 @@ class ATDVCharacter : public ACharacter
 public:
 	ATDVCharacter();
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -47,4 +47,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<AProjectile> _projectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> wTopDownWidget;
+	class UUserWidget* TopDownWidget;
 };

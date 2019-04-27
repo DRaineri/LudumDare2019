@@ -45,6 +45,15 @@ ATDVCharacter::ATDVCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void ATDVCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!TopDownWidget)
+		TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
+	TopDownWidget->AddToViewport();
+}
+
 void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Bind movement events
@@ -105,9 +114,4 @@ void ATDVCharacter::Server_Fire_Implementation()
 bool ATDVCharacter::Server_Fire_Validate()
 {
 	return true;
-}
-
-void ATDVCharacter::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
 }

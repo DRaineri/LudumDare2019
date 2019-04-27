@@ -4,6 +4,7 @@
 #include "FPV_Character/FPVHUD.h"
 #include "FPV_Character/FPVCharacter.h"
 #include "MainGameController.h"
+#include "MainGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMainGameMode::AMainGameMode()
@@ -18,4 +19,7 @@ AMainGameMode::AMainGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPVHUD::StaticClass();
+
+	// use our custom GameState
+	GameStateClass = AMainGameState::StaticClass();
 }
