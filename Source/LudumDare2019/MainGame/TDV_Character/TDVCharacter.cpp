@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MyGameInstance.h"
+#include "MainGame/MainGameState.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
@@ -126,6 +127,34 @@ void ATDVCharacter::Server_Fire_Implementation()
 }
 
 bool ATDVCharacter::Server_Fire_Validate()
+{
+	return true;
+}
+
+void ATDVCharacter::Server_LoseLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_LoseLife(amount);
+	}
+}
+
+bool ATDVCharacter::Server_LoseLife_Validate(float amount)
+{
+	return true;
+}
+
+void ATDVCharacter::Server_GainLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_GainLife(amount);
+	}
+}
+
+bool ATDVCharacter::Server_GainLife_Validate(float amount)
 {
 	return true;
 }

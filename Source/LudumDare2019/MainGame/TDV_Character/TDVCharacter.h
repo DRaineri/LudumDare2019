@@ -38,6 +38,12 @@ protected:
 	UFUNCTION(Server, reliable, WithValidation)
 	void Server_Fire();
 
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_LoseLife(float amount);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_GainLife(float amount);
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
