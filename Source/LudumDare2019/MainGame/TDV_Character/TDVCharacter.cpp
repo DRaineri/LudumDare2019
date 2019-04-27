@@ -11,6 +11,7 @@
 #include "MainGame/MainGameState.h"
 #include "MainGame/MainGameController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 
 ATDVCharacter::ATDVCharacter()
@@ -238,7 +239,7 @@ bool ATDVCharacter::GetPlanePositionAtScreenPosition(
 	return false;
 }
 
-void ATDVCharacter::AimUsingMouseCursor() const
+void ATDVCharacter::AimUsingMouseCursor()
 {
 	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	// Get the pawn location
@@ -257,14 +258,15 @@ void ATDVCharacter::AimUsingMouseCursor() const
 
 
 	// If we hit something aim set that as our aim direction, otherwise aim at the point on the plane
-	FVector Direction = FVector::ZeroVector;
 	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
 
 	if (Location != FVector::ZeroVector)
 	{
-		Direction = Location - PawnLocation;
 		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
 		if (bHit)
 			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
 	} 
+	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
+	PlayerRot.Pitch = 0.f;
+	SetActorRotation(PlayerRot);
 }
