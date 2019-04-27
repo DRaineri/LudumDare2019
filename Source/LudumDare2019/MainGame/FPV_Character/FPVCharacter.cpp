@@ -12,6 +12,7 @@
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "MyGameInstance.h"
+#include "MainGame/MainGameState.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -44,6 +45,7 @@ AFPVCharacter::AFPVCharacter()
 
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 }
+
 
 void AFPVCharacter::BeginPlay()
 {
@@ -160,6 +162,34 @@ void AFPVCharacter::Server_Fire_Implementation()
 }
 
 bool AFPVCharacter::Server_Fire_Validate()
+{
+	return true;
+}
+
+void AFPVCharacter::Server_LoseLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_LoseLife(amount);
+	}
+}
+
+bool AFPVCharacter::Server_LoseLife_Validate(float amount)
+{
+	return true;
+}
+
+void AFPVCharacter::Server_GainLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_GainLife(amount);
+	}
+}
+
+bool AFPVCharacter::Server_GainLife_Validate(float amount)
 {
 	return true;
 }
