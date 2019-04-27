@@ -42,8 +42,7 @@ AFPVCharacter::AFPVCharacter()
 	);
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
-	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
-	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 }
 
 void AFPVCharacter::BeginPlay()
@@ -78,9 +77,7 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AFPVCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &AFPVCharacter::LookUpAtRate);
 
 
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &AFPVCharacter::InviteFriend);
