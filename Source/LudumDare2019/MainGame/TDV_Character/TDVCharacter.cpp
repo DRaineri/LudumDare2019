@@ -76,7 +76,7 @@ void ATDVCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AimUsingMouseCursor();
+	Server_AimUsingMouseCursor();
 }
 
 void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -128,39 +128,35 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	APlayerController* playercontroller = Cast<APlayerController>(GetController());
-
-	if (IsValid(playercontroller))
+	if (HasAuthority())
 	{
-		FHitResult hitResult;
-		playercontroller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, hitResult);
+		Multicast_Fire();
 
-		hitResult.Location.Z = 0;
-
-		FVector playerLocationPlane = GetActorLocation();
-		playerLocationPlane.Z = 0;
-
-		FRotator rotation = (hitResult.Location - playerLocationPlane).Rotation();
-		FVector location = GetActorLocation() + FVector(0, 0, 200);
-
-		FTransform transform(rotation, location);
-
-		Server_Fire(transform);
+		// Do the damages here
+	}
+	else
+	{
+		Server_Fire();
 	}
 }
 
-void ATDVCharacter::Server_Fire_Implementation(FTransform transform)
+void ATDVCharacter::Multicast_Fire_Implementation()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
 		DefaultAttackParticles,
 		GetMesh()->GetSocketLocation("FirePlaceSocket"),
-		GetActorRotation(),
+		GetMesh()->GetSocketRotation("FirePlaceSocket"),
 		true
 	);
 }
 
-bool ATDVCharacter::Server_Fire_Validate(FTransform transform)
+void ATDVCharacter::Server_Fire_Implementation()
+{
+	Multicast_Fire();
+}
+
+bool ATDVCharacter::Server_Fire_Validate()
 {
 	return true;
 }
@@ -237,7 +233,7 @@ bool ATDVCharacter::GetPlanePositionAtScreenPosition(
 	return false;
 }
 
-void ATDVCharacter::AimUsingMouseCursor()
+void ATDVCharacter::Server_AimUsingMouseCursor_Implementation()
 {
 	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	// Get the pawn location
@@ -267,4 +263,9 @@ void ATDVCharacter::AimUsingMouseCursor()
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	PlayerRot.Pitch = 0.f;
 	SetActorRotation(PlayerRot);
+}
+
+bool ATDVCharacter::Server_AimUsingMouseCursor_Validate()
+{
+	return true;
 }
