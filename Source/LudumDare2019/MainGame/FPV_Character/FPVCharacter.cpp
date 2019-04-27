@@ -126,18 +126,23 @@ void AFPVCharacter::InviteFriend()
 
 void AFPVCharacter::OnFire_Implementation()
 {
-	//Server_Fire();
+	Server_Fire();
 }
 
 void AFPVCharacter::Server_Fire_Implementation()
 {
 	UWorld* world = GetWorld();
-	if (IsValid(world) && _projectileClass.IsValid())
+	if (IsValid(world) && _projectileClass)
 	{
 		FActorSpawnParameters param;
 		param.Owner = this;
 		Instigator = this;
-		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass.Get(), GetActorTransform(), param);
+
+		FVector spawnLocation;
+		FRotator spawnRotation;
+		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
+
+		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
 	}
 }
 

@@ -71,8 +71,8 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY(EditDefaultsOnly)
-	TAssetSubclassOf<AProjectile> _projectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<AProjectile> _projectileClass;
 
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
