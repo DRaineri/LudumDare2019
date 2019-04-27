@@ -3,6 +3,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "LudumDare2019/MainGame/Projectiles/Projectile.h"
+
 #include "TDVCharacter.generated.h"
 
 
@@ -28,6 +30,13 @@ protected:
 	**/
 	void InviteFriend();
 
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnFire();
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void Server_Fire();
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
@@ -35,4 +44,7 @@ protected:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<AProjectile> _projectileClass;
 };

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "LudumDare2019/MainGame/FPV_Character/Projectile.h"
+#include "LudumDare2019/MainGame/Projectiles/Projectile.h"
 
 #include "FPVCharacter.generated.h"
 

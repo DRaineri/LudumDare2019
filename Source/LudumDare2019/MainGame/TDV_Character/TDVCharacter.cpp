@@ -51,6 +51,9 @@ void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATDVCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATDVCharacter::MoveRight);
 
+	// Bind fire event
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATDVCharacter::OnFire);
+
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &ATDVCharacter::InviteFriend);
 }
 
@@ -75,6 +78,33 @@ void ATDVCharacter::InviteFriend()
 	// Get the current game instance
 	UMyGameInstance* Gi = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	Gi->InviteFriend();
+}
+
+void ATDVCharacter::OnFire_Implementation()
+{
+	Server_Fire();
+}
+
+void ATDVCharacter::Server_Fire_Implementation()
+{
+	UWorld* world = GetWorld();
+	if (IsValid(world) && _projectileClass)
+	{
+		FActorSpawnParameters param;
+		param.Owner = this;
+		Instigator = this;
+
+		FVector spawnLocation;
+		FRotator spawnRotation;
+		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
+
+		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
+	}
+}
+
+bool ATDVCharacter::Server_Fire_Validate()
+{
+	return true;
 }
 
 void ATDVCharacter::Tick(float DeltaSeconds)
