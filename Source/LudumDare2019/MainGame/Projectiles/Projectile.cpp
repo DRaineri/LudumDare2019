@@ -1,7 +1,9 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "Projectile.h"
+#include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 
 AProjectile::AProjectile() 
@@ -21,6 +23,10 @@ AProjectile::AProjectile()
 
 	// Set as root component
 	RootComponent = CollisionComp;
+
+	// Create the Mesh of the projectile
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetupAttachment(RootComponent);
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
