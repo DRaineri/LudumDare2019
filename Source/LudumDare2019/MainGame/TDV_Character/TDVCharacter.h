@@ -19,6 +19,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -32,6 +34,15 @@ protected:
 	**/
 	void InviteFriend();
 
+	/**
+	 * Methods use to force the TDV to follow
+	 * the mouse cursor
+	**/
+	bool GetMousePositionOnAimingPlane(FVector& IntersectVector) const;
+	bool GetPlanePositionAtScreenPosition(
+		const FVector2D ScreenPosition,
+		FVector& IntersectVector) const;
+	void AimUsingMouseCursor();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
