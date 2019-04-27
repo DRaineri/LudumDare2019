@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
+#include "Runtime/Engine/Classes/GameFramework/FloatingPawnMovement.h"
 #include "Monster.generated.h"
 
 UCLASS()
-class LUDUMDARE2019_API AMonster : public APawn
+class LUDUMDARE2019_API AMonster : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -25,4 +26,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
 	class UBehaviorTree *MonsterBehavior;
+
+	//UPROPERTY()
+	//UFloatingPawnMovement* PawnMovement;
 };
