@@ -152,9 +152,8 @@ void AFPVCharacter::Server_Fire_Implementation()
 		param.Owner = this;
 		Instigator = this;
 
-		FVector spawnLocation;
-		FRotator spawnRotation;
-		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
+		FVector spawnLocation = GetMesh()->GetSocketLocation("FirePlaceSocket");
+		FRotator spawnRotation = GetControlRotation();
 
 		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
 	}
