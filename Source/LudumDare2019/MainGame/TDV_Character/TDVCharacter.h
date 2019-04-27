@@ -64,8 +64,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<AProjectile> _projectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = Particles)
+	UParticleSystem* DefaultAttackParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wTopDownWidget;
