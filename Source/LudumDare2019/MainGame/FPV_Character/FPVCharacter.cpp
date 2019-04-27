@@ -103,6 +103,18 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &AFPVCharacter::InviteFriend);
 }
 
+void AFPVCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* playerController = Cast<APlayerController>(NewController);
+	if (IsValid(playerController))
+	{
+		playerController->bShowMouseCursor = false;
+	}
+}
+
+
 void AFPVCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)

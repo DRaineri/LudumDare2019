@@ -27,6 +27,8 @@ protected:
 	virtual void Destroyed() override;
 
 public:
+	virtual void PossessedBy(AController* NewController) override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;

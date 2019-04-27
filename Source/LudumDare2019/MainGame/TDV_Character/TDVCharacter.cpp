@@ -81,6 +81,18 @@ void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &ATDVCharacter::InviteFriend);
 }
 
+void ATDVCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* playerController = Cast<APlayerController>(NewController);
+	if (IsValid(playerController))
+	{
+		playerController->bShowMouseCursor = true;
+	}
+}
+
+
 void ATDVCharacter::MoveForward(float val)
 {
 	if (val != 0.0f)
@@ -106,10 +118,28 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	Server_Fire();
+	APlayerController* playercontroller = Cast<APlayerController>(GetController());
+
+	if (IsValid(playercontroller))
+	{
+		FHitResult hitResult;
+		playercontroller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, hitResult);
+
+		hitResult.Location.Z = 0;
+
+		FVector playerLocationPlane = GetActorLocation();
+		playerLocationPlane.Z = 0;
+
+		FRotator rotation = (hitResult.Location - playerLocationPlane).Rotation();
+		FVector location = GetActorLocation() + FVector(0, 0, 200);
+
+		FTransform transform(rotation, location);
+
+		Server_Fire(transform);
+	}
 }
 
-void ATDVCharacter::Server_Fire_Implementation()
+void ATDVCharacter::Server_Fire_Implementation(FTransform transform)
 {
 	UWorld* world = GetWorld();
 	if (IsValid(world) && _projectileClass)
@@ -118,15 +148,12 @@ void ATDVCharacter::Server_Fire_Implementation()
 		param.Owner = this;
 		Instigator = this;
 
-		FVector spawnLocation;
-		FRotator spawnRotation;
-		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
 
-		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
+		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, transform.GetLocation(), transform.GetRotation().Rotator(), param);
 	}
 }
 
-bool ATDVCharacter::Server_Fire_Validate()
+bool ATDVCharacter::Server_Fire_Validate(FTransform transform)
 {
 	return true;
 }

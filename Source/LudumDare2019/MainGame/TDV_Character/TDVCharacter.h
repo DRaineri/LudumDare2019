@@ -20,6 +20,7 @@ public:
 	virtual void Destroyed() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 protected:
 	void MoveForward(float val);
@@ -36,7 +37,7 @@ protected:
 	void OnFire();
 
 	UFUNCTION(Server, reliable, WithValidation)
-	void Server_Fire();
+	void Server_Fire(FTransform transform);
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 		void Server_LoseLife(float amount);
