@@ -11,6 +11,8 @@ AMonster::AMonster()
 
 	AIControllerClass = AMonsterController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	//PawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("PawnMovement"));
 }
 
 // Called when the game starts or when spawned
