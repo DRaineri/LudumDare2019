@@ -25,7 +25,7 @@ void AMainGameState::Server_LoseLife_Implementation(float amount)
 	if (PlayersLife <= 0.f)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("You are Dead!"));
-		PlayersLife = 100.f;
+		PlayersLife = PlayersMaxLife;
 	}
 }
 

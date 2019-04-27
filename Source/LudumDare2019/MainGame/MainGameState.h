@@ -26,7 +26,7 @@ public:
 
 protected:
 
-	UPROPERTY(Replicated, BlueprintReadWrite)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	float PlayersLife;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
