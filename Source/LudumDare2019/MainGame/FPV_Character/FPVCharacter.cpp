@@ -12,6 +12,7 @@
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "MyGameInstance.h"
+#include "MainGame/MainGameState.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -45,6 +46,7 @@ AFPVCharacter::AFPVCharacter()
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 }
 
+
 void AFPVCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -53,9 +55,23 @@ void AFPVCharacter::BeginPlay()
 	GetMesh()->SetHiddenInGame(false, true);
 	FPSCameraComponent->SetHiddenInGame(true, true);
 
-	if (!FirstPersonWidget)
-		FirstPersonWidget = CreateWidget<UUserWidget>(GetWorld(), wFirstPersonWidget);
-	FirstPersonWidget->AddToViewport();
+	if (IsLocallyControlled())
+	{
+		if (!FirstPersonWidget)
+			FirstPersonWidget = CreateWidget<UUserWidget>(GetWorld(), wFirstPersonWidget);
+		FirstPersonWidget->AddToViewport();
+	}
+}
+
+void AFPVCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	if (IsLocallyControlled())
+	{
+		if (FirstPersonWidget)
+			FirstPersonWidget->RemoveFromParent();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,6 +102,18 @@ void AFPVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &AFPVCharacter::InviteFriend);
 }
+
+void AFPVCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* playerController = Cast<APlayerController>(NewController);
+	if (IsValid(playerController))
+	{
+		playerController->bShowMouseCursor = false;
+	}
+}
+
 
 void AFPVCharacter::MoveForward(float Value)
 {
@@ -138,15 +166,42 @@ void AFPVCharacter::Server_Fire_Implementation()
 		param.Owner = this;
 		Instigator = this;
 
-		FVector spawnLocation;
-		FRotator spawnRotation;
-		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
+		FVector spawnLocation = GetMesh()->GetSocketLocation("FirePlaceSocket");
+		FRotator spawnRotation = GetControlRotation();
 
 		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
 	}
 }
 
 bool AFPVCharacter::Server_Fire_Validate()
+{
+	return true;
+}
+
+void AFPVCharacter::Server_LoseLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_LoseLife(amount);
+	}
+}
+
+bool AFPVCharacter::Server_LoseLife_Validate(float amount)
+{
+	return true;
+}
+
+void AFPVCharacter::Server_GainLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_GainLife(amount);
+	}
+}
+
+bool AFPVCharacter::Server_GainLife_Validate(float amount)
 {
 	return true;
 }

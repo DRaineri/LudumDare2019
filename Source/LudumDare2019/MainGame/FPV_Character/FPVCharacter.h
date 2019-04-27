@@ -23,9 +23,12 @@ public:
 	AFPVCharacter();
 
 protected:
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 public:
+	virtual void PossessedBy(AController* NewController) override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -65,6 +68,12 @@ protected:
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void Server_Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_LoseLife(float amount);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_GainLife(float amount);
 	
 protected:
 	// APawn interface

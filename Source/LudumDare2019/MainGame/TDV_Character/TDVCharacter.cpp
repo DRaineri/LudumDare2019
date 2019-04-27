@@ -8,6 +8,8 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MyGameInstance.h"
+#include "MainGame/MainGameState.h"
+#include "MainGame/MainGameController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
@@ -49,9 +51,30 @@ void ATDVCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!TopDownWidget)
-		TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
-	TopDownWidget->AddToViewport();
+	if (IsLocallyControlled())
+	{
+		if (!TopDownWidget)
+			TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
+		TopDownWidget->AddToViewport();
+	}
+}
+
+void ATDVCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	if (IsLocallyControlled())
+	{
+		if (TopDownWidget)
+			TopDownWidget->RemoveFromParent();
+	}
+}
+
+void ATDVCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	AimUsingMouseCursor();
 }
 
 void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -65,6 +88,18 @@ void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 
 	PlayerInputComponent->BindAction("InviteFriend", EInputEvent::IE_Pressed, this, &ATDVCharacter::InviteFriend);
 }
+
+void ATDVCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* playerController = Cast<APlayerController>(NewController);
+	if (IsValid(playerController))
+	{
+		playerController->bShowMouseCursor = true;
+	}
+}
+
 
 void ATDVCharacter::MoveForward(float val)
 {
@@ -91,10 +126,28 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	Server_Fire();
+	APlayerController* playercontroller = Cast<APlayerController>(GetController());
+
+	if (IsValid(playercontroller))
+	{
+		FHitResult hitResult;
+		playercontroller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, hitResult);
+
+		hitResult.Location.Z = 0;
+
+		FVector playerLocationPlane = GetActorLocation();
+		playerLocationPlane.Z = 0;
+
+		FRotator rotation = (hitResult.Location - playerLocationPlane).Rotation();
+		FVector location = GetActorLocation() + FVector(0, 0, 200);
+
+		FTransform transform(rotation, location);
+
+		Server_Fire(transform);
+	}
 }
 
-void ATDVCharacter::Server_Fire_Implementation()
+void ATDVCharacter::Server_Fire_Implementation(FTransform transform)
 {
 	UWorld* world = GetWorld();
 	if (IsValid(world) && _projectileClass)
@@ -103,15 +156,115 @@ void ATDVCharacter::Server_Fire_Implementation()
 		param.Owner = this;
 		Instigator = this;
 
-		FVector spawnLocation;
-		FRotator spawnRotation;
-		GetMesh()->GetSocketWorldLocationAndRotation("FirePlaceSocket", spawnLocation, spawnRotation);
 
-		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
+		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, transform.GetLocation(), transform.GetRotation().Rotator(), param);
 	}
 }
 
-bool ATDVCharacter::Server_Fire_Validate()
+bool ATDVCharacter::Server_Fire_Validate(FTransform transform)
 {
 	return true;
+}
+
+void ATDVCharacter::Server_LoseLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_LoseLife(amount);
+	}
+}
+
+bool ATDVCharacter::Server_LoseLife_Validate(float amount)
+{
+	return true;
+}
+
+void ATDVCharacter::Server_GainLife_Implementation(float amount)
+{
+	if (HasAuthority())
+	{
+		AMainGameState* MainGameState = GetWorld()->GetGameState<AMainGameState>();
+		MainGameState->Server_GainLife(amount);
+	}
+}
+
+bool ATDVCharacter::Server_GainLife_Validate(float amount)
+{
+	return true;
+}
+
+bool ATDVCharacter::GetMousePositionOnAimingPlane(FVector& IntersectVector) const
+{
+	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Controller->Player);
+	bool bHit = false;
+	if (LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		if (LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
+		{
+			bHit = GetPlanePositionAtScreenPosition(MousePosition, IntersectVector);
+		}
+	}
+
+	if (!bHit)	//If there was no hit we reset the results. This is redundant but helps Blueprint users
+	{
+		IntersectVector = FVector::ZeroVector;
+	}
+
+	return bHit;
+}
+
+bool ATDVCharacter::GetPlanePositionAtScreenPosition(
+	const FVector2D ScreenPosition, 
+	FVector& IntersectVector) const
+{
+	// Early out if we clicked on a HUD hitbox
+	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (Controller->GetHUD() != NULL && Controller->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
+	{
+		return false;
+	}
+
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (UGameplayStatics::DeprojectScreenToWorld(Controller, ScreenPosition, WorldOrigin, WorldDirection) == true)
+	{
+		IntersectVector = FMath::LinePlaneIntersection(WorldOrigin, WorldOrigin + WorldDirection * Controller->HitResultTraceDistance, GetActorLocation(), FVector::UpVector);
+		return true;
+	}
+
+	return false;
+}
+
+void ATDVCharacter::AimUsingMouseCursor() const
+{
+	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	// Get the pawn location
+	FVector PawnLocation = GetActorLocation();
+
+	// Trace to whats beneath the mouse cursor
+	FHitResult OutTraceResult;
+	//GetHitResultUnderCursor(ECC_Pawn, false, OutTraceResult);
+	FVector IntersectVector;
+	GetMousePositionOnAimingPlane(IntersectVector);
+
+	// Trace down through the aiming plane to see if we hit an actor that we can aim at
+	static const FName NAME_MouseAimingTrace("MouseAimingTrace");
+	FCollisionQueryParams CollisionQueryParams(NAME_MouseAimingTrace, true);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(OutTraceResult, IntersectVector, IntersectVector - FVector::UpVector * Controller->HitResultTraceDistance, ECC_Pawn, CollisionQueryParams);
+
+
+	// If we hit something aim set that as our aim direction, otherwise aim at the point on the plane
+	FVector Direction = FVector::ZeroVector;
+	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
+
+	if (Location != FVector::ZeroVector)
+	{
+		Direction = Location - PawnLocation;
+		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
+		if (bHit)
+			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
+	} 
 }

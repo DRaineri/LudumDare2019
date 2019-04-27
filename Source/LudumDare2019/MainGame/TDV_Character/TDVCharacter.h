@@ -17,8 +17,12 @@ public:
 	ATDVCharacter();
 
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 protected:
 	void MoveForward(float val);
@@ -30,12 +34,27 @@ protected:
 	**/
 	void InviteFriend();
 
+	/**
+	 * Methods use to force the TDV to follow
+	 * the mouse cursor
+	**/
+	bool GetMousePositionOnAimingPlane(FVector& IntersectVector) const;
+	bool GetPlanePositionAtScreenPosition(
+		const FVector2D ScreenPosition,
+		FVector& IntersectVector) const;
+	void AimUsingMouseCursor() const;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
 	UFUNCTION(Server, reliable, WithValidation)
-	void Server_Fire();
+	void Server_Fire(FTransform transform);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_LoseLife(float amount);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_GainLife(float amount);
 
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
