@@ -42,7 +42,7 @@ protected:
 	bool GetPlanePositionAtScreenPosition(
 		const FVector2D ScreenPosition,
 		FVector& IntersectVector) const;
-	void AimUsingMouseCursor() const;
+	void AimUsingMouseCursor();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
