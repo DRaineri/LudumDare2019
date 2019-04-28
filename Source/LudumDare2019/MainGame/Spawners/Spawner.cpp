@@ -17,6 +17,7 @@ void ASpawner::Authority_SpawnMonster()
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Spawn !"));
 	FActorSpawnParameters params;
 	params.Owner = this;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	MonsterClassToSpawn.LoadSynchronous();
 	AMonster* newMonster = GetWorld()->SpawnActor<AMonster>(MonsterClassToSpawn.Get(), GetActorLocation(), GetActorRotation(), params);
 	if (IsValid(newMonster))
