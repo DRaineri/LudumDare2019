@@ -47,8 +47,11 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
-	UFUNCTION(Server, reliable, WithValidation)
-	void Server_Fire(FTransform transform);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_Fire();
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 		void Server_LoseLife(float amount);
