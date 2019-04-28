@@ -3,8 +3,11 @@
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "MainGame/Monsters/Monster.h"
+#include "MainGame/FPV_Character/FPVCharacter.h"
+#include "MainGame/TDV_Character/TDVCharacter.h"
 #include "Components/SphereComponent.h"
 
 AProjectile::AProjectile() 
@@ -47,9 +50,26 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this))
 	{
-		AMonster* Monster = Cast<AMonster>(OtherActor);
-		if (Monster)
-			Monster->Server_TakeDamages(10.f);
+		if (ProjectileIgnoreTarget == EProjectileIgnoreTarget::EPlayers)
+		{
+			AMonster* Monster = Cast<AMonster>(OtherActor);
+			if (Monster)
+				Monster->Server_TakeDamages(Damages);
+		}
+		else
+		{
+			AFPVCharacter* FPVCharacter = Cast<AFPVCharacter>(OtherActor);
+			if (FPVCharacter)
+			{
+				FPVCharacter->Server_LoseLife(Damages);
+			}
+			else
+			{
+				ATDVCharacter* TDVCharacter = Cast<ATDVCharacter>(OtherActor);
+				if (TDVCharacter)
+					TDVCharacter->Server_LoseLife(Damages);
+			}
+		}
 
 		Destroy();
 	}

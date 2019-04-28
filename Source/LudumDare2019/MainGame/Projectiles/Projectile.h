@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+UENUM(BlueprintType)
+enum class EProjectileIgnoreTarget : uint8
+{
+	EPlayers,
+	EMonsters
+};
+
 UCLASS(config=Game)
 class AProjectile : public AActor
 {
@@ -16,11 +23,17 @@ class AProjectile : public AActor
 	class USphereComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
-		class UStaticMeshComponent* MeshComponent;
+	class UStaticMeshComponent* MeshComponent;
 
 	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(EditDefaultsOnly, Category = Config)
+	float Damages;
+
+	UPROPERTY(EditDefaultsOnly, Category = Config)
+	EProjectileIgnoreTarget ProjectileIgnoreTarget;
 
 public:
 	AProjectile();

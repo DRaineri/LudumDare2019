@@ -34,7 +34,7 @@ protected:
 	UPROPERTY()
 	AMonster* MyPawn;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APawn* MyTarget;
 
 	APawn* GetClosestPlayer(TArray<APawn*> Players);
