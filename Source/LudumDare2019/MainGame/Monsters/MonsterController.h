@@ -26,7 +26,6 @@ public:
 
 	virtual void Possess(class APawn* InPawn) override;
 
-
 	UFUNCTION(BlueprintCallable)
 	void SetTargetFocus();
 
@@ -34,7 +33,7 @@ protected:
 	UPROPERTY()
 	AMonster* MyPawn;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APawn* MyTarget;
 
 	APawn* GetClosestPlayer(TArray<APawn*> Players);

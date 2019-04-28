@@ -26,6 +26,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	UPROPERTY(BlueprintReadWrite)
+	float LifeStealPercentByHit = 0.f;
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_LoseLife(float amount);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_GainLife(float amount);
 protected:
 	void MoveForward(float val);
 	void MoveRight(float val);
@@ -49,17 +57,14 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Fire();
-
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_Fire();
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-		void Server_LoseLife(float amount);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_FireFX();
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-		void Server_GainLife(float amount);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_FireFX();
 
 	UFUNCTION()
 	void OnDetectDefaultAttackCollisionStart(

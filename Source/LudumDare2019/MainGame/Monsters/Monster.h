@@ -32,9 +32,15 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_TakeDamages(float Damages);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_KillMonster();
+
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
 	class UBehaviorTree *MonsterBehavior;
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = Config)
 	FMonsterData MonsterData;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Dying)
+	bool bIsDying;
 };

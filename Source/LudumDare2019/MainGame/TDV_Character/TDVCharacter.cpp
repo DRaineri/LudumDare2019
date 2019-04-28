@@ -134,23 +134,28 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
+	Server_Fire();
 	if (HasAuthority())
-	{
-		Multicast_Fire();
-
-		for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
-		{
-			if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
-				DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
-		}
-	}
+		Multicast_FireFX();
 	else
+		Server_FireFX();
+}
+
+void ATDVCharacter::Server_Fire_Implementation()
+{
+	for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
 	{
-		Server_Fire();
+		if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
+			DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
 	}
 }
 
-void ATDVCharacter::Multicast_Fire_Implementation()
+bool ATDVCharacter::Server_Fire_Validate()
+{
+	return true;
+}
+
+void ATDVCharacter::Multicast_FireFX_Implementation()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
@@ -161,12 +166,12 @@ void ATDVCharacter::Multicast_Fire_Implementation()
 	);
 }
 
-void ATDVCharacter::Server_Fire_Implementation()
+void ATDVCharacter::Server_FireFX_Implementation()
 {
-	Multicast_Fire();
+	Multicast_FireFX();
 }
 
-bool ATDVCharacter::Server_Fire_Validate()
+bool ATDVCharacter::Server_FireFX_Validate()
 {
 	return true;
 }
