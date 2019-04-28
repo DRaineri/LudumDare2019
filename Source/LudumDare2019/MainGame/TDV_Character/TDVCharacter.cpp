@@ -47,8 +47,6 @@ ATDVCharacter::ATDVCharacter()
 	// Create the default attack collision
 	DefaultAttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DefaultAttackCollision"));
 	DefaultAttackCollision->SetupAttachment(GetCapsuleComponent());
-	DefaultAttackCollision->OnComponentBeginOverlap.AddDynamic(this, &ATDVCharacter::OnDetectDefaultAttackCollisionStart);
-	DefaultAttackCollision->OnComponentEndOverlap.AddDynamic(this, &ATDVCharacter::OnDetectDefaultAttackCollisionEnd);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -134,19 +132,23 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	Server_Fire();
 	if (HasAuthority())
 		Multicast_FireFX();
 	else
 		Server_FireFX();
+
+	Server_Fire();
 }
 
 void ATDVCharacter::Server_Fire_Implementation()
 {
-	for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
+	TArray<AActor*> Actors;
+	DefaultAttackCollision->GetOverlappingActors(Actors, TSubclassOf<AMonster>());
+	for (int i = Actors.Num() - 1; i >= 0; --i)
 	{
-		if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
-			DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
+		AMonster* Monster = Cast<AMonster>(Actors[i]);
+		if (Monster && !Monster->IsActorBeingDestroyed())
+			Monster->Server_TakeDamages(20.f);
 	}
 }
 
@@ -272,33 +274,4 @@ void ATDVCharacter::AimUsingMouseCursor()
 	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	Controller->SetControlRotation(PlayerRot);
-}
-
-void ATDVCharacter::OnDetectDefaultAttackCollisionStart(
-	class UPrimitiveComponent* HitComp,
-	class AActor* OtherActor,
-	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep,
-	const FHitResult & SweepResult)
-{
-	AMonster* Monster = Cast<AMonster>(OtherActor);
-	if (Monster)
-	{
-		if (DefaultAttackMonsters.Find(Monster) == -1)
-			DefaultAttackMonsters.Add(Monster);
-	}
-}
-
-void ATDVCharacter::OnDetectDefaultAttackCollisionEnd(
-	class UPrimitiveComponent* HitComp,
-	class AActor* OtherActor,
-	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
-{
-	AMonster* Monster = Cast<AMonster>(OtherActor);
-	if (Monster)
-	{
-		if (DefaultAttackMonsters.Find(Monster) != -1)
-			DefaultAttackMonsters.Remove(Monster);
-	}
 }
