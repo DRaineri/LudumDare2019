@@ -26,7 +26,6 @@ public:
 
 	virtual void Possess(class APawn* InPawn) override;
 
-
 	UFUNCTION(BlueprintCallable)
 	void SetTargetFocus();
 
