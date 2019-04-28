@@ -134,11 +134,12 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	Server_Fire();
 	if (HasAuthority())
 		Multicast_FireFX();
 	else
 		Server_FireFX();
+
+	Server_Fire();
 }
 
 void ATDVCharacter::Server_Fire_Implementation()
