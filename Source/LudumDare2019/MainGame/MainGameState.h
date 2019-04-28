@@ -36,7 +36,7 @@ public:
 	void Server_GainLife(float amount);
 
 	UFUNCTION()
-	void Auhtority_StartGame();
+	void Authority_StartGame();
 
 	UFUNCTION()
 	void OnRep_CurrentGameStateUpdated();

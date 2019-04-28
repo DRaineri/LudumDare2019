@@ -52,12 +52,13 @@ bool AMainGameState::Server_GainLife_Validate(float amount)
 	return true;
 }
 
-void AMainGameState::Auhtority_StartGame()
+void AMainGameState::Authority_StartGame()
 {
 	ensure(HasAuthority());
 	if (CurrentGameState == EGameStateEnum::VE_WaitingForPlayers)
 	{
 		CurrentGameState = EGameStateEnum::VE_TransitionToArena;
+		OnRep_CurrentGameStateUpdated();
 	}
 }
 
@@ -66,10 +67,11 @@ void AMainGameState::OnRep_CurrentGameStateUpdated()
 {
 	switch (CurrentGameState)
 	{
-	case EGameStateEnum::VE_TransitionToArena:
-	{
+		case EGameStateEnum::VE_TransitionToArena:
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Game start!"));
 
-	}
+		}
 
 	}
 }

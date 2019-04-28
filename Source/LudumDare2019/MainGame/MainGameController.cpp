@@ -71,7 +71,7 @@ void AMainGameController::Server_StartGame_Implementation()
 		AMainGameState* gameState = world->GetGameState<AMainGameState>();
 		if (IsValid(gameState))
 		{
-
+			gameState->Authority_StartGame();
 		}
 	}
 }
