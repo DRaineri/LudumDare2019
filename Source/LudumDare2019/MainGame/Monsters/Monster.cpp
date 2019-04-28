@@ -3,6 +3,7 @@
 #include "Monster.h"
 #include "MonsterController.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine.h"
 
 // Sets default values
 AMonster::AMonster()
@@ -42,6 +43,7 @@ void AMonster::Server_TakeDamages_Implementation(float Damages)
 		return;
 
 	MonsterData.CurrentHealth -= Damages;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Monster life: %f"), MonsterData.CurrentHealth));
 	if (MonsterData.CurrentHealth <= 0.f)
 	{
 		Destroy();

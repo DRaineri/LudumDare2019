@@ -47,6 +47,8 @@ ATDVCharacter::ATDVCharacter()
 	// Create the default attack collision
 	DefaultAttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DefaultAttackCollision"));
 	DefaultAttackCollision->SetupAttachment(GetCapsuleComponent());
+	DefaultAttackCollision->OnComponentBeginOverlap.AddDynamic(this, &ATDVCharacter::OnDetectDefaultAttackCollisionStart);
+	DefaultAttackCollision->OnComponentEndOverlap.AddDynamic(this, &ATDVCharacter::OnDetectDefaultAttackCollisionEnd);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -136,7 +138,11 @@ void ATDVCharacter::OnFire_Implementation()
 	{
 		Multicast_Fire();
 
-		// Do the damages here
+		for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
+		{
+			if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
+				DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
+		}
 	}
 	else
 	{
@@ -268,4 +274,33 @@ void ATDVCharacter::AimUsingMouseCursor()
 	}
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	Controller->SetControlRotation(PlayerRot);
+}
+
+void ATDVCharacter::OnDetectDefaultAttackCollisionStart(
+	class UPrimitiveComponent* HitComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult & SweepResult)
+{
+	AMonster* Monster = Cast<AMonster>(OtherActor);
+	if (Monster)
+	{
+		if (DefaultAttackMonsters.Find(Monster) == -1)
+			DefaultAttackMonsters.Add(Monster);
+	}
+}
+
+void ATDVCharacter::OnDetectDefaultAttackCollisionEnd(
+	class UPrimitiveComponent* HitComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	AMonster* Monster = Cast<AMonster>(OtherActor);
+	if (Monster)
+	{
+		if (DefaultAttackMonsters.Find(Monster) != -1)
+			DefaultAttackMonsters.Remove(Monster);
+	}
 }
