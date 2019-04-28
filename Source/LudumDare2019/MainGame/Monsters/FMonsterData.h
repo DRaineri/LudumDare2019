@@ -13,4 +13,7 @@ struct FMonsterData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadonly, Category = Health)
 	float MaxHealth;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Damages)
+		float Damages;
 };

@@ -77,8 +77,6 @@ protected:
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void Server_Fire();
-
-
 	
 protected:
 	// APawn interface

@@ -58,11 +58,10 @@ protected:
 	void OnFire();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Fire();
+	void Multicast_FireFX();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_Fire();
-
+	void Server_FireFX();
 
 	UFUNCTION()
 	void OnDetectDefaultAttackCollisionStart(

@@ -136,7 +136,7 @@ void ATDVCharacter::OnFire_Implementation()
 {
 	if (HasAuthority())
 	{
-		Multicast_Fire();
+		Multicast_FireFX();
 
 		for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
 		{
@@ -146,11 +146,11 @@ void ATDVCharacter::OnFire_Implementation()
 	}
 	else
 	{
-		Server_Fire();
+		Server_FireFX();
 	}
 }
 
-void ATDVCharacter::Multicast_Fire_Implementation()
+void ATDVCharacter::Multicast_FireFX_Implementation()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
@@ -161,12 +161,12 @@ void ATDVCharacter::Multicast_Fire_Implementation()
 	);
 }
 
-void ATDVCharacter::Server_Fire_Implementation()
+void ATDVCharacter::Server_FireFX_Implementation()
 {
-	Multicast_Fire();
+	Multicast_FireFX();
 }
 
-bool ATDVCharacter::Server_Fire_Validate()
+bool ATDVCharacter::Server_FireFX_Validate()
 {
 	return true;
 }

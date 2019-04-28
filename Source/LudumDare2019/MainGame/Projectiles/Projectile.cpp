@@ -3,8 +3,11 @@
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "MainGame/Monsters/Monster.h"
+#include "MainGame/FPV_Character/FPVCharacter.h"
+#include "MainGame/TDV_Character/TDVCharacter.h"
 #include "Components/SphereComponent.h"
 
 #include "LudumDare2019/MainGame/FPV_Character/FPVCharacter.h"
@@ -51,25 +54,40 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this))
 	{
-		float damageDone = 10.f;
-		AMonster* Monster = Cast<AMonster>(OtherActor);
-		if (Monster)
-			Monster->Server_TakeDamages(damageDone);
-
-		AActor* owner = GetOwner();
-
-		ATDVCharacter* tdvCharacter = Cast<ATDVCharacter>(owner);
-		if (IsValid(tdvCharacter))
+		if (ProjectileIgnoreTarget == EProjectileIgnoreTarget::EPlayers)
 		{
-			tdvCharacter->Server_GainLife(tdvCharacter->LifeStealPercentByHit/100 * damageDone);
-		}
+			AMonster* Monster = Cast<AMonster>(OtherActor);
+			if (Monster)
+				Monster->Server_TakeDamages(Damages);
 
-		AFPVCharacter* fpvCharacter = Cast<AFPVCharacter>(owner);
-		if (IsValid(fpvCharacter))
+			AActor* owner = GetOwner();
+
+			ATDVCharacter* tdvCharacter = Cast<ATDVCharacter>(owner);
+			if (IsValid(tdvCharacter))
+			{
+				tdvCharacter->Server_GainLife(tdvCharacter->LifeStealPercentByHit/100 * Damages);
+			}
+
+			AFPVCharacter* fpvCharacter = Cast<AFPVCharacter>(owner);
+			if (IsValid(fpvCharacter))
+			{
+				fpvCharacter->Server_GainLife(fpvCharacter->LifeStealPercentByHit/100 * Damages);
+			}
+		}
+		else
 		{
-			fpvCharacter->Server_GainLife(fpvCharacter->LifeStealPercentByHit/100 * damageDone);
+			AFPVCharacter* FPVCharacter = Cast<AFPVCharacter>(OtherActor);
+			if (FPVCharacter)
+			{
+				FPVCharacter->Server_LoseLife(Damages);
+			}
+			else
+			{
+				ATDVCharacter* TDVCharacter = Cast<ATDVCharacter>(OtherActor);
+				if (TDVCharacter)
+					TDVCharacter->Server_LoseLife(Damages);
+			}
 		}
-
 
 		Destroy();
 	}

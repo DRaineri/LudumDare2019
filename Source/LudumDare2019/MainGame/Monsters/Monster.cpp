@@ -21,6 +21,7 @@ void AMonster::BeginPlay()
 	Super::BeginPlay();
 	
 	MonsterData.CurrentHealth = MonsterData.MaxHealth;
+	bIsDying = false;
 }
 
 void AMonster::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -28,6 +29,7 @@ void AMonster::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonster, MonsterData);
+	DOREPLIFETIME(AMonster, bIsDying);
 }
 
 // Called every frame
@@ -39,18 +41,39 @@ void AMonster::Tick(float DeltaTime)
 
 void AMonster::Server_TakeDamages_Implementation(float Damages)
 {
-	if (!HasAuthority())
+	if (!HasAuthority()
+		|| MonsterData.CurrentHealth <= 0.f)
 		return;
 
 	MonsterData.CurrentHealth -= Damages;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Monster life: %f"), MonsterData.CurrentHealth));
 	if (MonsterData.CurrentHealth <= 0.f)
 	{
-		Destroy();
+		bIsDying = true;
+		FTimerHandle UnusedHandle;
+		GetWorldTimerManager().SetTimer(
+			UnusedHandle,
+			this,
+			&AMonster::Server_KillMonster,
+			0.5f,
+			false);
 	}
 }
 
 bool AMonster::Server_TakeDamages_Validate(float Damages)
+{
+	return true;
+}
+
+void AMonster::Server_KillMonster_Implementation()
+{
+	if (!HasAuthority())
+		return;
+
+	Destroy();
+}
+
+bool AMonster::Server_KillMonster_Validate()
 {
 	return true;
 }
