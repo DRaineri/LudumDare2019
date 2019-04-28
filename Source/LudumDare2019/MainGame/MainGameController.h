@@ -17,6 +17,9 @@ protected:
 	UFUNCTION(Server, reliable, withValidation)
 	void Server_SwitchPawn();
 
+	UFUNCTION(Server, reliable, withValidation)
+	void Server_StartGame();
+
 	TSubclassOf<APawn> _firstPersonPawnClass;
 	TSubclassOf<APawn> _topDownPawnClass;
 };

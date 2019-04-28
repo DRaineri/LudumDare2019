@@ -7,6 +7,17 @@
 #include "Engine.h"
 #include "MainGameState.generated.h"
 
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class EGameStateEnum : uint8
+{
+	VE_WaitingForPlayers 	UMETA(DisplayName = "Waiting for player"),
+	VE_TransitionToArena 	UMETA(DisplayName = "Transition to arena"),
+	VE_FightInArena	UMETA(DisplayName = "Fight in arena"),
+	VE_TransitionToShop	UMETA(DisplayName = "Transition to shop"),
+	VE_ShoppingTime	UMETA(DisplayName = "ShoppingTime")
+};
+
+
 /**
  * 
  */
@@ -24,6 +35,12 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void Server_GainLife(float amount);
 
+	UFUNCTION()
+	void Authority_StartGame();
+
+	UFUNCTION()
+	void OnRep_CurrentGameStateUpdated();
+
 protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
@@ -31,6 +48,12 @@ protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	float PlayersMaxLife;
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentGameStateUpdated)
+	EGameStateEnum CurrentGameState = EGameStateEnum::VE_WaitingForPlayers;
+
+	UPROPERTY(Replicated)
+	int32 CurrentLevel = -1;
 
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps

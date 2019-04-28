@@ -5,6 +5,7 @@
 #include "FPV_Character/FPVCharacter.h"
 #include "TDV_Character/TDVCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "LudumDare2019/MainGame/MainGameState.h"
 
 AMainGameController::AMainGameController()
 {
@@ -19,6 +20,7 @@ void AMainGameController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	InputComponent->BindAction("SwitchPawn", IE_Released, this, &AMainGameController::Server_SwitchPawn);
+	InputComponent->BindAction("StartGame", IE_Released, this, &AMainGameController::Server_StartGame);
 }
 
 void AMainGameController::Server_SwitchPawn_Implementation()
@@ -61,3 +63,20 @@ bool AMainGameController::Server_SwitchPawn_Validate()
 	return true;
 }
 
+void AMainGameController::Server_StartGame_Implementation()
+{
+	UWorld* world = GetWorld();
+	if (IsValid(world))
+	{
+		AMainGameState* gameState = world->GetGameState<AMainGameState>();
+		if (IsValid(gameState))
+		{
+			gameState->Authority_StartGame();
+		}
+	}
+}
+
+bool AMainGameController::Server_StartGame_Validate()
+{
+	return true;
+}
