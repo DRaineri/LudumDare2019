@@ -134,20 +134,25 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
+	Server_Fire();
 	if (HasAuthority())
-	{
 		Multicast_FireFX();
-
-		for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
-		{
-			if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
-				DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
-		}
-	}
 	else
-	{
 		Server_FireFX();
+}
+
+void ATDVCharacter::Server_Fire_Implementation()
+{
+	for (int i = DefaultAttackMonsters.Num() - 1; i >= 0; --i)
+	{
+		if (!DefaultAttackMonsters[i]->IsActorBeingDestroyed())
+			DefaultAttackMonsters[i]->Server_TakeDamages(20.f);
 	}
+}
+
+bool ATDVCharacter::Server_Fire_Validate()
+{
+	return true;
 }
 
 void ATDVCharacter::Multicast_FireFX_Implementation()
@@ -156,7 +161,7 @@ void ATDVCharacter::Multicast_FireFX_Implementation()
 		GetWorld(),
 		DefaultAttackParticles,
 		GetMesh()->GetSocketLocation("FirePlaceSocket"),
-		GetMesh()->GetSocketRotation("FirePlaceSocket"),
+		GetMesh()->GetSocketLocation("FirePlaceSocket"),
 		true
 	);
 }

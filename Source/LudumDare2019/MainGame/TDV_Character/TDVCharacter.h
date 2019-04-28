@@ -57,6 +57,9 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_Fire();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireFX();
 
