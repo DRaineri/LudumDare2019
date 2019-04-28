@@ -265,13 +265,6 @@ void ATDVCharacter::AimUsingMouseCursor()
 
 	// If we hit something aim set that as our aim direction, otherwise aim at the point on the plane
 	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
-
-	if (Location != FVector::ZeroVector)
-	{
-		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
-		if (bHit)
-			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
-	}
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	Controller->SetControlRotation(PlayerRot);
 }

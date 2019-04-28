@@ -7,6 +7,8 @@
 
 #include "Spawner.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMonsterSpawned, AMonster*, MonsterSpawned);
+
 
 UCLASS(BlueprintType)
 class ASpawner : public AActor
@@ -16,9 +18,13 @@ class ASpawner : public AActor
 public :
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
 	void Authority_SetActiveSpawner(bool isActive);
 
 	void Authority_SpawnMonster();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetSpawnerVisibility(bool newVisibility);
 
 	UPROPERTY(EditInstanceOnly)
 	FName SpawnerId;
@@ -30,10 +36,18 @@ public :
 	TSoftClassPtr<UParticleSystem> FxToTriggerOnSpawn;
 
 	UPROPERTY(EditDefaultsOnly)
-	float SpawnFrequency = 0.f;
+	float SpawnFrequency = 10.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 NumberOfMonsterToSpawn = 1;
+
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnMonsterSpawned Authority_OnMonsterSpawned;
 
 protected :
 	bool _isActiveSpawner = false;
+
+	int32 _nbMonsterSpawnedSinceLastActivation;
 
 	FTimerHandle _timerHandle;
 };
