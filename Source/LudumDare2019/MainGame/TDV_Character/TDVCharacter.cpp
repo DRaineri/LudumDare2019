@@ -4,6 +4,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,7 +22,7 @@ ATDVCharacter::ATDVCharacter()
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
@@ -127,42 +128,35 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
-	APlayerController* playercontroller = Cast<APlayerController>(GetController());
-
-	if (IsValid(playercontroller))
+	if (HasAuthority())
 	{
-		FHitResult hitResult;
-		playercontroller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, hitResult);
+		Multicast_Fire();
 
-		hitResult.Location.Z = 0;
-
-		FVector playerLocationPlane = GetActorLocation();
-		playerLocationPlane.Z = 0;
-
-		FRotator rotation = (hitResult.Location - playerLocationPlane).Rotation();
-		FVector location = GetActorLocation() + FVector(0, 0, 200);
-
-		FTransform transform(rotation, location);
-
-		Server_Fire(transform);
+		// Do the damages here
+	}
+	else
+	{
+		Server_Fire();
 	}
 }
 
-void ATDVCharacter::Server_Fire_Implementation(FTransform transform)
+void ATDVCharacter::Multicast_Fire_Implementation()
 {
-	UWorld* world = GetWorld();
-	if (IsValid(world) && _projectileClass)
-	{
-		FActorSpawnParameters param;
-		param.Owner = this;
-		Instigator = this;
-
-
-		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, transform.GetLocation(), transform.GetRotation().Rotator(), param);
-	}
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		DefaultAttackParticles,
+		GetMesh()->GetSocketLocation("FirePlaceSocket"),
+		GetMesh()->GetSocketRotation("FirePlaceSocket"),
+		true
+	);
 }
 
-bool ATDVCharacter::Server_Fire_Validate(FTransform transform)
+void ATDVCharacter::Server_Fire_Implementation()
+{
+	Multicast_Fire();
+}
+
+bool ATDVCharacter::Server_Fire_Validate()
 {
 	return true;
 }
@@ -241,13 +235,15 @@ bool ATDVCharacter::GetPlanePositionAtScreenPosition(
 
 void ATDVCharacter::AimUsingMouseCursor()
 {
+	if (!IsLocallyControlled())
+		return;
+
 	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	// Get the pawn location
 	FVector PawnLocation = GetActorLocation();
 
 	// Trace to whats beneath the mouse cursor
 	FHitResult OutTraceResult;
-	//GetHitResultUnderCursor(ECC_Pawn, false, OutTraceResult);
 	FVector IntersectVector;
 	GetMousePositionOnAimingPlane(IntersectVector);
 
@@ -265,8 +261,7 @@ void ATDVCharacter::AimUsingMouseCursor()
 		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
 		if (bHit)
 			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
-	} 
+	}
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
-	PlayerRot.Pitch = 0.f;
-	SetActorRotation(PlayerRot);
+	Controller->SetControlRotation(PlayerRot);
 }

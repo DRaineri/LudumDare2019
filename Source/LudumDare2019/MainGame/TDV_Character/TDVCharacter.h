@@ -47,8 +47,11 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
-	UFUNCTION(Server, reliable, WithValidation)
-	void Server_Fire(FTransform transform);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_Fire();
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 		void Server_LoseLife(float amount);
@@ -64,8 +67,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<AProjectile> _projectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = Particles)
+	UParticleSystem* DefaultAttackParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wTopDownWidget;
