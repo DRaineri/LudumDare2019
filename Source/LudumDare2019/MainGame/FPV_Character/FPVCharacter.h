@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "LudumDare2019/MainGame/Projectiles/Projectile.h"
+#include "Runtime/Core/Public/Misc/DateTime.h"
 
 #include "FPVCharacter.generated.h"
 
@@ -72,6 +73,10 @@ protected:
 	 */
 	void InviteFriend();
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<FLifetimeProperty>& OutLifetimeProps
+	) const override;
+
 	UFUNCTION(BlueprintNativeEvent)
 	void OnFire();
 
@@ -89,6 +94,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wFirstPersonWidget;
 	class UUserWidget* FirstPersonWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Config)
+	float FireRate;
+
+	UPROPERTY(Replicated)
+	FDateTime LastSuccessFireTimeStamp;
 
 public:
 	/** Returns FirstPersonCameraComponent subobject **/

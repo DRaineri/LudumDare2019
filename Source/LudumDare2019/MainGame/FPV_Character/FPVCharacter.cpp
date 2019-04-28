@@ -14,6 +14,8 @@
 #include "MyGameInstance.h"
 #include "MainGame/MainGameState.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -61,6 +63,13 @@ void AFPVCharacter::BeginPlay()
 			FirstPersonWidget = CreateWidget<UUserWidget>(GetWorld(), wFirstPersonWidget);
 		FirstPersonWidget->AddToViewport();
 	}
+}
+
+void AFPVCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFPVCharacter, LastSuccessFireTimeStamp);
 }
 
 void AFPVCharacter::Destroyed()
@@ -154,6 +163,11 @@ void AFPVCharacter::InviteFriend()
 
 void AFPVCharacter::OnFire_Implementation()
 {
+	FTimespan Timespan = UKismetMathLibrary::Subtract_DateTimeDateTime(FDateTime::Now(), LastSuccessFireTimeStamp);
+	double s = Timespan.GetTotalSeconds();
+	if (s < FireRate)
+		return;
+
 	Server_Fire();
 }
 
@@ -170,6 +184,7 @@ void AFPVCharacter::Server_Fire_Implementation()
 		FRotator spawnRotation = GetControlRotation();
 
 		AProjectile* projectile = world->SpawnActor<AProjectile>(_projectileClass, spawnLocation, spawnRotation, param);
+		LastSuccessFireTimeStamp = FDateTime::Now();
 	}
 }
 
