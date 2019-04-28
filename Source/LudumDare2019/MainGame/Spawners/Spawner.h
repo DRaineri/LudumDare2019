@@ -35,10 +35,10 @@ public :
 	UPROPERTY(EditDefaultsOnly)
 	TSoftClassPtr<UParticleSystem> FxToTriggerOnSpawn;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	float SpawnFrequency = 10.f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	int32 NumberOfMonsterToSpawn = 1;
 
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)

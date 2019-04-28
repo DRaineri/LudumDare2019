@@ -67,7 +67,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FOnShoppingTime OnShoppingTime;
 	
-protected:
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int32 CurrentLevel = 0;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	float PlayersLife;
@@ -78,8 +79,7 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentGameStateUpdated)
 	EGameStateEnum CurrentGameState = EGameStateEnum::VE_WaitingForPlayers;
 
-	UPROPERTY(Replicated)
-	int32 CurrentLevel = -1;
+protected:
 
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps
