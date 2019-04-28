@@ -16,6 +16,9 @@ void AMainGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(AMainGameState, PlayersMaxLife);
 	DOREPLIFETIME(AMainGameState, PlayersLife);
+	DOREPLIFETIME(AMainGameState, CurrentGameState);
+	DOREPLIFETIME(AMainGameState, CurrentLevel);
+
 }
 
 void AMainGameState::Server_LoseLife_Implementation(float amount)
@@ -48,3 +51,26 @@ bool AMainGameState::Server_GainLife_Validate(float amount)
 {
 	return true;
 }
+
+void AMainGameState::Auhtority_StartGame()
+{
+	ensure(HasAuthority());
+	if (CurrentGameState == EGameStateEnum::VE_WaitingForPlayers)
+	{
+		CurrentGameState = EGameStateEnum::VE_TransitionToArena;
+	}
+}
+
+
+void AMainGameState::OnRep_CurrentGameStateUpdated()
+{
+	switch (CurrentGameState)
+	{
+	case EGameStateEnum::VE_TransitionToArena:
+	{
+
+	}
+
+	}
+}
+
