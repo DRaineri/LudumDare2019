@@ -66,21 +66,6 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_FireFX();
 
-	UFUNCTION()
-	void OnDetectDefaultAttackCollisionStart(
-		class UPrimitiveComponent* HitComp,
-		class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep,
-		const FHitResult & SweepResult);
-
-	UFUNCTION()
-	void OnDetectDefaultAttackCollisionEnd(
-		class UPrimitiveComponent* HitComp,
-		class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
-
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
@@ -98,8 +83,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wTopDownWidget;
 	class UUserWidget* TopDownWidget;
-
-	// The array of the monsters colliding with the default
-	// attack of the player
-	TArray<AMonster*> DefaultAttackMonsters;
 };
