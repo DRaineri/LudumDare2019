@@ -14,6 +14,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 
 ATDVCharacter::ATDVCharacter()
 {
@@ -63,6 +64,13 @@ void ATDVCharacter::BeginPlay()
 			TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
 		TopDownWidget->AddToViewport();
 	}
+}
+
+void ATDVCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATDVCharacter, LastSuccessFireTimeStamp);
 }
 
 void ATDVCharacter::Destroyed()
@@ -132,6 +140,11 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
+	FTimespan Timespan = UKismetMathLibrary::Subtract_DateTimeDateTime(FDateTime::Now(), LastSuccessFireTimeStamp);
+	double s = Timespan.GetTotalSeconds();
+	if (s < FireRate)
+		return;
+
 	if (HasAuthority())
 		Multicast_FireFX();
 	else
@@ -142,8 +155,6 @@ void ATDVCharacter::OnFire_Implementation()
 
 void ATDVCharacter::Server_Fire_Implementation()
 {
-
-
 	TArray<AActor*> Actors;
 	DefaultAttackCollision->GetOverlappingActors(Actors, TSubclassOf<AMonster>());
 	for (int i = Actors.Num() - 1; i >= 0; --i)
@@ -152,6 +163,8 @@ void ATDVCharacter::Server_Fire_Implementation()
 		if (Monster && !Monster->IsActorBeingDestroyed())
 			Monster->Server_TakeDamages(20.f);
 	}
+
+	LastSuccessFireTimeStamp = FDateTime::Now();
 }
 
 bool ATDVCharacter::Server_Fire_Validate()

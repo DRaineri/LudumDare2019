@@ -20,7 +20,6 @@ void AMainGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AMainGameState, PlayersLife);
 	DOREPLIFETIME(AMainGameState, CurrentGameState);
 	DOREPLIFETIME(AMainGameState, CurrentLevel);
-
 }
 
 void AMainGameState::Server_LoseLife_Implementation(float amount)
