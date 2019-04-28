@@ -142,6 +142,8 @@ void ATDVCharacter::OnFire_Implementation()
 
 void ATDVCharacter::Server_Fire_Implementation()
 {
+
+
 	TArray<AActor*> Actors;
 	DefaultAttackCollision->GetOverlappingActors(Actors, TSubclassOf<AMonster>());
 	for (int i = Actors.Num() - 1; i >= 0; --i)
@@ -269,9 +271,15 @@ void ATDVCharacter::AimUsingMouseCursor()
 	FCollisionQueryParams CollisionQueryParams(NAME_MouseAimingTrace, true);
 	bool bHit = GetWorld()->LineTraceSingleByChannel(OutTraceResult, IntersectVector, IntersectVector - FVector::UpVector * Controller->HitResultTraceDistance, ECC_Pawn, CollisionQueryParams);
 
-
 	// If we hit something aim set that as our aim direction, otherwise aim at the point on the plane
 	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
+	if (Location != FVector::ZeroVector)
+	{
+		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
+		if (bHit)
+			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
+	}
+	
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	Controller->SetControlRotation(PlayerRot);
 }

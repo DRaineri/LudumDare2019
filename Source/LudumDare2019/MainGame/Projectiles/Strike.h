@@ -20,20 +20,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(
-		TArray<FLifetimeProperty>& OutLifetimeProps
-	) const override;
-
 	UPROPERTY(VisibleDefaultsOnly, Category = Collision)
 	USphereComponent* CollisionComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = Particles)
 	UParticleSystem* ExplosionParticles;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 
 protected:
 	UFUNCTION()
@@ -45,15 +36,6 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation)
 		void Server_Exploded();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ExplodeFX();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_ExplodeFX();
-
 	UPROPERTY(EditDefaultsOnly, Category = Config)
 		float Damages;
-
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadonly, Category = Config)
-		bool bIsExploding;
 };
