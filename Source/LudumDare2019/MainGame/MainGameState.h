@@ -17,6 +17,7 @@ enum class EGameStateEnum : uint8
 	VE_ShoppingTime	UMETA(DisplayName = "ShoppingTime")
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStart);
 
 /**
  * 
@@ -40,6 +41,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_CurrentGameStateUpdated();
+
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnGameStart OnGameStart;
 
 protected:
 
