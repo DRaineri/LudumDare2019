@@ -37,6 +37,7 @@ void ASpawner::Authority_SpawnMonster()
 void ASpawner::Authority_SetActiveSpawner(bool isActive)
 { 
 	_isActiveSpawner = isActive; 
+	SetSpawnerVisibility(isActive);
 
 	if (isActive)
 	{

@@ -7,6 +7,10 @@
 #include "MainGame/Monsters/Monster.h"
 #include "Components/SphereComponent.h"
 
+#include "LudumDare2019/MainGame/FPV_Character/FPVCharacter.h"
+#include "LudumDare2019/MainGame/TDV_Character/TDVCharacter.h"
+
+
 AProjectile::AProjectile() 
 {
 	bReplicates = true;
@@ -47,9 +51,25 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this))
 	{
+		float damageDone = 10.f;
 		AMonster* Monster = Cast<AMonster>(OtherActor);
 		if (Monster)
-			Monster->Server_TakeDamages(10.f);
+			Monster->Server_TakeDamages(damageDone);
+
+		AActor* owner = GetOwner();
+
+		ATDVCharacter* tdvCharacter = Cast<ATDVCharacter>(owner);
+		if (IsValid(tdvCharacter))
+		{
+			tdvCharacter->Server_GainLife(tdvCharacter->LifeStealPercentByHit/100 * damageDone);
+		}
+
+		AFPVCharacter* fpvCharacter = Cast<AFPVCharacter>(owner);
+		if (IsValid(fpvCharacter))
+		{
+			fpvCharacter->Server_GainLife(fpvCharacter->LifeStealPercentByHit/100 * damageDone);
+		}
+
 
 		Destroy();
 	}

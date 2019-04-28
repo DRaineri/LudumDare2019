@@ -37,6 +37,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(BlueprintReadWrite)
+	float LifeStealPercentByHit = 0.f;
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_LoseLife(float amount);
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+		void Server_GainLife(float amount);
+
 protected:
 
 	/** Handles moving forward/backward */
@@ -69,11 +78,7 @@ protected:
 	UFUNCTION(Server, reliable, WithValidation)
 	void Server_Fire();
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-		void Server_LoseLife(float amount);
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-		void Server_GainLife(float amount);
 	
 protected:
 	// APawn interface
