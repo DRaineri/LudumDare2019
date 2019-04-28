@@ -22,7 +22,7 @@ ATDVCharacter::ATDVCharacter()
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
@@ -76,7 +76,7 @@ void ATDVCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Server_AimUsingMouseCursor();
+	AimUsingMouseCursor();
 }
 
 void ATDVCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -233,15 +233,17 @@ bool ATDVCharacter::GetPlanePositionAtScreenPosition(
 	return false;
 }
 
-void ATDVCharacter::Server_AimUsingMouseCursor_Implementation()
+void ATDVCharacter::AimUsingMouseCursor()
 {
+	if (!IsLocallyControlled())
+		return;
+
 	AMainGameController* Controller = Cast<AMainGameController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	// Get the pawn location
 	FVector PawnLocation = GetActorLocation();
 
 	// Trace to whats beneath the mouse cursor
 	FHitResult OutTraceResult;
-	//GetHitResultUnderCursor(ECC_Pawn, false, OutTraceResult);
 	FVector IntersectVector;
 	GetMousePositionOnAimingPlane(IntersectVector);
 
@@ -259,13 +261,7 @@ void ATDVCharacter::Server_AimUsingMouseCursor_Implementation()
 		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
 		if (bHit)
 			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
-	} 
+	}
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
-	PlayerRot.Pitch = 0.f;
-	SetActorRotation(PlayerRot);
-}
-
-bool ATDVCharacter::Server_AimUsingMouseCursor_Validate()
-{
-	return true;
+	Controller->SetControlRotation(PlayerRot);
 }
