@@ -3,6 +3,8 @@
 #include "MainGameState.h"
 #include "UnrealNetwork.h"
 
+const float K_TRANSITION_TIME = 6.f;
+
 AMainGameState::AMainGameState()
 	: Super()
 {
@@ -55,12 +57,12 @@ bool AMainGameState::Server_GainLife_Validate(float amount)
 void AMainGameState::Authority_StartGame()
 {
 	ensure(HasAuthority());
-	if (CurrentGameState == EGameStateEnum::VE_WaitingForPlayers)
+	if (CurrentGameState == EGameStateEnum::VE_WaitingForPlayers || CurrentGameState == EGameStateEnum::VE_ShoppingTime)
 	{
 		CurrentGameState = EGameStateEnum::VE_TransitionToArena;
 		OnRep_CurrentGameStateUpdated();
 
-		GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_StartFight, 6.f, false);
+		GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_StartFight, K_TRANSITION_TIME, false);
 
 	}
 }
@@ -84,10 +86,21 @@ void AMainGameState::Authority_EndFight()
 		CurrentGameState = EGameStateEnum::VE_TransitionToShop;
 		OnRep_CurrentGameStateUpdated();
 
-		//GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_StartFight, 6.f, false);
+		CurrentLevel++;
+
+		GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_ShopTime, K_TRANSITION_TIME, false);
 	}
 }
 
+void AMainGameState::Authority_ShopTime()
+{
+	ensure(HasAuthority());
+	if (CurrentGameState == EGameStateEnum::VE_TransitionToShop)
+	{
+		CurrentGameState = EGameStateEnum::VE_ShoppingTime;
+		OnRep_CurrentGameStateUpdated();
+	}
+}
 
 void AMainGameState::OnRep_CurrentGameStateUpdated()
 {
@@ -109,6 +122,13 @@ void AMainGameState::OnRep_CurrentGameStateUpdated()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Round end, you have 6 seconds to go back to shop!"));
 			OnFightEnd.Broadcast();
+			break;
+		}
+		case EGameStateEnum::VE_ShoppingTime:
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Shop time! Press K to start next round"));
+			OnShoppingTime.Broadcast();
+			break;
 		}
 	}
 }

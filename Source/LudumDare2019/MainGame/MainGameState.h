@@ -20,6 +20,7 @@ enum class EGameStateEnum : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFightStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFightEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShoppingTime);
 
 
 /**
@@ -49,6 +50,9 @@ public:
 	void Authority_EndFight();
 
 	UFUNCTION()
+	void Authority_ShopTime();
+
+	UFUNCTION()
 	void OnRep_CurrentGameStateUpdated();
 
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
@@ -60,6 +64,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FOnFightEnd OnFightEnd;
 
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnShoppingTime OnShoppingTime;
+	
 protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
