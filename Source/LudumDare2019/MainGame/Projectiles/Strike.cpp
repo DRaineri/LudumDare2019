@@ -32,37 +32,23 @@ void AStrike::BeginPlay()
 		false);
 }
 
-void AStrike::GetLifetimeReplicatedProps(
-	TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AStrike, bIsExploding);
-}
-
-// Called every frame
-void AStrike::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AStrike::Explode()
 {
 	if (HasAuthority())
-	{
-		Multicast_ExplodeFX();
 		Server_Explode();
-	}
-	else
-	{
-		Server_ExplodeFX();
-	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		ExplosionParticles,
+		GetActorLocation(),
+		GetActorRotation(),
+		true
+	);
 }
 
 void AStrike::Server_Explode_Implementation()
 {
-	// TODO : Deals damages to the players in range
+	// Deals damages to the players in range
 	TArray<AActor*> Actors;
 	GetOverlappingActors(Actors);
 
@@ -77,8 +63,6 @@ void AStrike::Server_Explode_Implementation()
 			TDVCharacter->Server_LoseLife(Damages);
  	}
 
-	bIsExploding = true;
-
 	FTimerHandle UnusedHandle;
 	GetWorldTimerManager().SetTimer(
 		UnusedHandle,
@@ -86,6 +70,11 @@ void AStrike::Server_Explode_Implementation()
 		&AStrike::Server_Exploded,
 		0.2f,
 		false);
+}
+
+bool AStrike::Server_Explode_Validate()
+{
+	return true;
 }
 
 void AStrike::Server_Exploded_Implementation()
@@ -96,30 +85,4 @@ void AStrike::Server_Exploded_Implementation()
 bool AStrike::Server_Exploded_Validate()
 {
 	return true;
-}
-
-bool AStrike::Server_Explode_Validate()
-{
-	return true;
-}
-
-void AStrike::Server_ExplodeFX_Implementation()
-{
-	Multicast_ExplodeFX();
-}
-
-bool AStrike::Server_ExplodeFX_Validate()
-{
-	return true;
-}
-
-void AStrike::Multicast_ExplodeFX_Implementation()
-{
-	UGameplayStatics::SpawnEmitterAtLocation(
-		GetWorld(),
-		ExplosionParticles,
-		GetActorLocation(),
-		GetActorRotation(),
-		true
-	);
 }

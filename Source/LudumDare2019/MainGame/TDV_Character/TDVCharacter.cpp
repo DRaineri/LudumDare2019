@@ -14,6 +14,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 
 ATDVCharacter::ATDVCharacter()
 {
@@ -63,6 +64,13 @@ void ATDVCharacter::BeginPlay()
 			TopDownWidget = CreateWidget<UUserWidget>(GetWorld(), wTopDownWidget);
 		TopDownWidget->AddToViewport();
 	}
+}
+
+void ATDVCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATDVCharacter, LastSuccessFireTimeStamp);
 }
 
 void ATDVCharacter::Destroyed()
@@ -132,6 +140,11 @@ void ATDVCharacter::InviteFriend()
 
 void ATDVCharacter::OnFire_Implementation()
 {
+	FTimespan Timespan = UKismetMathLibrary::Subtract_DateTimeDateTime(FDateTime::Now(), LastSuccessFireTimeStamp);
+	double s = Timespan.GetTotalSeconds();
+	if (s < FireRate)
+		return;
+
 	if (HasAuthority())
 		Multicast_FireFX();
 	else
@@ -150,6 +163,8 @@ void ATDVCharacter::Server_Fire_Implementation()
 		if (Monster && !Monster->IsActorBeingDestroyed())
 			Monster->Server_TakeDamages(20.f);
 	}
+
+	LastSuccessFireTimeStamp = FDateTime::Now();
 }
 
 bool ATDVCharacter::Server_Fire_Validate()
@@ -269,9 +284,15 @@ void ATDVCharacter::AimUsingMouseCursor()
 	FCollisionQueryParams CollisionQueryParams(NAME_MouseAimingTrace, true);
 	bool bHit = GetWorld()->LineTraceSingleByChannel(OutTraceResult, IntersectVector, IntersectVector - FVector::UpVector * Controller->HitResultTraceDistance, ECC_Pawn, CollisionQueryParams);
 
-
 	// If we hit something aim set that as our aim direction, otherwise aim at the point on the plane
 	FVector Location = bHit ? OutTraceResult.ImpactPoint : IntersectVector;
+	if (Location != FVector::ZeroVector)
+	{
+		DrawDebugLine(GetWorld(), PawnLocation, Location, FColor(255, 0, 0), false, -1, 0, 10.0f);
+		if (bHit)
+			DrawDebugLine(GetWorld(), IntersectVector, OutTraceResult.ImpactPoint, FColor(255, 255, 0), false, -1, 0, 10.0f);
+	}
+	
 	FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PawnLocation, Location);
 	Controller->SetControlRotation(PlayerRot);
 }

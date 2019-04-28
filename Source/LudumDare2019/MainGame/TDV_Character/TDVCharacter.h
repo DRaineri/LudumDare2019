@@ -6,6 +6,7 @@
 #include "LudumDare2019/MainGame/Projectiles/Projectile.h"
 #include "MainGame/Monsters/Monster.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
+#include "Runtime/Core/Public/Misc/DateTime.h"
 
 #include "TDVCharacter.generated.h"
 
@@ -43,6 +44,10 @@ protected:
 	 * UI on the client
 	**/
 	void InviteFriend();
+
+	virtual void GetLifetimeReplicatedProps(
+		TArray<FLifetimeProperty>& OutLifetimeProps
+	) const override;
 
 	/**
 	 * Methods use to force the TDV to follow
@@ -83,4 +88,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wTopDownWidget;
 	class UUserWidget* TopDownWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Config)
+	float FireRate;
+
+	UPROPERTY(Replicated)
+	FDateTime LastSuccessFireTimeStamp;
 };
