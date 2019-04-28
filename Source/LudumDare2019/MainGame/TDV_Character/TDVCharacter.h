@@ -4,6 +4,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "LudumDare2019/MainGame/Projectiles/Projectile.h"
+#include "MainGame/Monsters/Monster.h"
+#include "Runtime/Engine/Classes/Components/BoxComponent.h"
 
 #include "TDVCharacter.generated.h"
 
@@ -59,6 +61,21 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 		void Server_GainLife(float amount);
 
+	UFUNCTION()
+	void OnDetectDefaultAttackCollisionStart(
+		class UPrimitiveComponent* HitComp,
+		class AActor* OtherActor,
+		class UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep,
+		const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnDetectDefaultAttackCollisionEnd(
+		class UPrimitiveComponent* HitComp,
+		class AActor* OtherActor,
+		class UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
@@ -67,10 +84,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+	UPROPERTY(EditDefaultsOnly, Category = Collision)
+	UBoxComponent* DefaultAttackCollision;
+
 	UPROPERTY(EditDefaultsOnly, Category = Particles)
 	UParticleSystem* DefaultAttackParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> wTopDownWidget;
 	class UUserWidget* TopDownWidget;
+
+	// The array of the monsters colliding with the default
+	// attack of the player
+	TArray<AMonster*> DefaultAttackMonsters;
 };

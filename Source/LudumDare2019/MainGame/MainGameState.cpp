@@ -70,9 +70,8 @@ void AMainGameState::OnRep_CurrentGameStateUpdated()
 		case EGameStateEnum::VE_TransitionToArena:
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Game start!"));
-
+			OnGameStart.Broadcast();
 		}
-
 	}
 }
 
