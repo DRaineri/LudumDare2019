@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "LudumDare2019/MainGame/Projectiles/Projectile.h"
+#include "Runtime/Engine/Classes/Components/BoxComponent.h"
 
 #include "TDVCharacter.generated.h"
 
@@ -66,6 +67,9 @@ protected:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = Collision)
+	UBoxComponent* DefaultAttackCollision;
 
 	UPROPERTY(EditDefaultsOnly, Category = Particles)
 	UParticleSystem* DefaultAttackParticles;
