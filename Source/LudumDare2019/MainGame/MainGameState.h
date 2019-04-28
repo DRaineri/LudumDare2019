@@ -19,6 +19,8 @@ enum class EGameStateEnum : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFightStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFightEnd);
+
 
 /**
  * 
@@ -43,6 +45,9 @@ public:
 	UFUNCTION()
 	void Authority_StartFight();
 
+	UFUNCTION(BlueprintCallable)
+	void Authority_EndFight();
+
 	UFUNCTION()
 	void OnRep_CurrentGameStateUpdated();
 
@@ -51,6 +56,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FOnFightStart OnFightStart;
+
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnFightEnd OnFightEnd;
 
 protected:
 

@@ -29,6 +29,7 @@ void ASpawner::Authority_SpawnMonster()
 		if (_nbMonsterSpawnedSinceLastActivation >= NumberOfMonsterToSpawn)
 		{
 			Authority_SetActiveSpawner(false);
+			Authority_OnMonsterSpawned.Broadcast(newMonster);
 		}
 	}
 }

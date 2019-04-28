@@ -76,6 +76,19 @@ void AMainGameState::Authority_StartFight()
 	}
 }
 
+void AMainGameState::Authority_EndFight()
+{
+	ensure(HasAuthority());
+	if (CurrentGameState == EGameStateEnum::VE_FightInArena)
+	{
+		CurrentGameState = EGameStateEnum::VE_TransitionToShop;
+		OnRep_CurrentGameStateUpdated();
+
+		//GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_StartFight, 6.f, false);
+	}
+}
+
+
 void AMainGameState::OnRep_CurrentGameStateUpdated()
 {
 	switch (CurrentGameState)
@@ -91,6 +104,11 @@ void AMainGameState::OnRep_CurrentGameStateUpdated()
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fight for your life!"));
 			OnFightStart.Broadcast();
 			break;
+		}
+		case EGameStateEnum::VE_TransitionToShop:
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Round end, you have 6 seconds to go back to shop!"));
+			OnFightEnd.Broadcast();
 		}
 	}
 }

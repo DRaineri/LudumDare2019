@@ -7,6 +7,8 @@
 
 #include "Spawner.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMonsterSpawned, AMonster*, MonsterSpawned);
+
 
 UCLASS(BlueprintType)
 class ASpawner : public AActor
@@ -38,6 +40,9 @@ public :
 
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumberOfMonsterToSpawn = 1;
+
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnMonsterSpawned Authority_OnMonsterSpawned;
 
 protected :
 	bool _isActiveSpawner = false;
