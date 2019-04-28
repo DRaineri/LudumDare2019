@@ -59,9 +59,22 @@ void AMainGameState::Authority_StartGame()
 	{
 		CurrentGameState = EGameStateEnum::VE_TransitionToArena;
 		OnRep_CurrentGameStateUpdated();
+
+		GetWorldTimerManager().SetTimer(_timerHandle, this, &AMainGameState::Authority_StartFight, 6.f, false);
+
 	}
 }
 
+
+void AMainGameState::Authority_StartFight()
+{
+	ensure(HasAuthority());
+	if (CurrentGameState == EGameStateEnum::VE_TransitionToArena)
+	{
+		CurrentGameState = EGameStateEnum::VE_FightInArena;
+		OnRep_CurrentGameStateUpdated();
+	}
+}
 
 void AMainGameState::OnRep_CurrentGameStateUpdated()
 {
@@ -69,8 +82,15 @@ void AMainGameState::OnRep_CurrentGameStateUpdated()
 	{
 		case EGameStateEnum::VE_TransitionToArena:
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Game start!"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Game start in 6 seconds! Go to fighting area!"));
 			OnGameStart.Broadcast();
+			break;
+		}
+		case EGameStateEnum::VE_FightInArena:
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fight for your life!"));
+			OnFightStart.Broadcast();
+			break;
 		}
 	}
 }

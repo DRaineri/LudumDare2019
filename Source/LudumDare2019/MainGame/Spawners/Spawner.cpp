@@ -4,7 +4,7 @@ void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
+	if (HasAuthority() && _isActiveSpawner)
 	{
 		GetWorldTimerManager().SetTimer(_timerHandle, this, &ASpawner::Authority_SpawnMonster, SpawnFrequency, true);
 	}
@@ -23,8 +23,14 @@ void ASpawner::Authority_SpawnMonster()
 	{
 		newMonster->LaunchCharacter(GetActorForwardVector() * 100, true, true);
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Spawn down !"));
-	}
 
+		_nbMonsterSpawnedSinceLastActivation++;
+
+		if (_nbMonsterSpawnedSinceLastActivation >= NumberOfMonsterToSpawn)
+		{
+			Authority_SetActiveSpawner(false);
+		}
+	}
 }
 
 void ASpawner::Authority_SetActiveSpawner(bool isActive)
@@ -35,6 +41,7 @@ void ASpawner::Authority_SetActiveSpawner(bool isActive)
 	{
 		if (!_timerHandle.IsValid())
 		{
+			_nbMonsterSpawnedSinceLastActivation = 0;
 			GetWorldTimerManager().SetTimer(_timerHandle, this, &ASpawner::Authority_SpawnMonster, SpawnFrequency, true);
 		}
 	}

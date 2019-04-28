@@ -18,6 +18,7 @@ enum class EGameStateEnum : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFightStart);
 
 /**
  * 
@@ -40,10 +41,16 @@ public:
 	void Authority_StartGame();
 
 	UFUNCTION()
+	void Authority_StartFight();
+
+	UFUNCTION()
 	void OnRep_CurrentGameStateUpdated();
 
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FOnGameStart OnGameStart;
+
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FOnFightStart OnFightStart;
 
 protected:
 
@@ -62,4 +69,6 @@ protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps
 	) const override;
+
+	FTimerHandle _timerHandle;
 };
