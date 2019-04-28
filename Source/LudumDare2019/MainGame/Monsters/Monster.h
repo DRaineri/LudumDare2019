@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Runtime/Engine/Classes/GameFramework/FloatingPawnMovement.h"
+#include "FMonsterData.h"
 #include "Monster.generated.h"
 
 UCLASS()
@@ -20,13 +20,21 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<FLifetimeProperty>& OutLifetimeProps
+	) const override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// The method used to take damages
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_TakeDamages(float Damages);
+
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
 	class UBehaviorTree *MonsterBehavior;
 
-	//UPROPERTY()
-	//UFloatingPawnMovement* PawnMovement;
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = Config)
+	FMonsterData MonsterData;
 };

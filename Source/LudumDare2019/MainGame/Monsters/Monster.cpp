@@ -2,6 +2,7 @@
 
 #include "Monster.h"
 #include "MonsterController.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AMonster::AMonster()
@@ -11,8 +12,6 @@ AMonster::AMonster()
 
 	AIControllerClass = AMonsterController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-	//PawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("PawnMovement"));
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +19,14 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MonsterData.CurrentHealth = MonsterData.MaxHealth;
+}
+
+void AMonster::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMonster, MonsterData);
 }
 
 // Called every frame
@@ -27,4 +34,21 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AMonster::Server_TakeDamages_Implementation(float Damages)
+{
+	if (!HasAuthority())
+		return;
+
+	MonsterData.CurrentHealth -= Damages;
+	if (MonsterData.CurrentHealth <= 0.f)
+	{
+		Destroy();
+	}
+}
+
+bool AMonster::Server_TakeDamages_Validate(float Damages)
+{
+	return true;
 }

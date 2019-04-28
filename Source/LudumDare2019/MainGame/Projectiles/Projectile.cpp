@@ -4,6 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "MainGame/Monsters/Monster.h"
 #include "Components/SphereComponent.h"
 
 AProjectile::AProjectile() 
@@ -44,9 +45,11 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 {
 	// Hello world
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != NULL) && (OtherActor != this))
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		AMonster* Monster = Cast<AMonster>(OtherActor);
+		if (Monster)
+			Monster->Server_TakeDamages(10.f);
 
 		Destroy();
 	}
