@@ -41,8 +41,7 @@ void AMonster::Tick(float DeltaTime)
 
 void AMonster::Server_TakeDamages_Implementation(float Damages)
 {
-	if (!HasAuthority()
-		|| MonsterData.CurrentHealth <= 0.f)
+	if (MonsterData.CurrentHealth <= 0.f)
 		return;
 
 	MonsterData.CurrentHealth -= Damages;
@@ -67,9 +66,6 @@ bool AMonster::Server_TakeDamages_Validate(float Damages)
 
 void AMonster::Server_KillMonster_Implementation()
 {
-	if (!HasAuthority())
-		return;
-
 	Destroy();
 }
 

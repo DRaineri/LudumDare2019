@@ -41,6 +41,6 @@ public:
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = Config)
 	FMonsterData MonsterData;
 
-	UPROPERTY(Replicated, VisibleAnywhere, Category = Dying)
-		bool bIsDying;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Dying)
+	bool bIsDying;
 };
