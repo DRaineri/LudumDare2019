@@ -161,7 +161,7 @@ void ATDVCharacter::Multicast_FireFX_Implementation()
 		GetWorld(),
 		DefaultAttackParticles,
 		GetMesh()->GetSocketLocation("FirePlaceSocket"),
-		GetMesh()->GetSocketLocation("FirePlaceSocket"),
+		GetMesh()->GetSocketRotation("FirePlaceSocket"),
 		true
 	);
 }
